@@ -1,145 +1,130 @@
 <template>
-    <div class="min-h-screen bg-linear-to-br from-blue-600 to-blue-900 flex items-center justify-center p-4">
-        <div class="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-
-            <div class="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
-                <div class="relative group cursor-default">
-                    <div
-                        class="absolute -inset-1 bg-linear-to-r from-blue-300 to-cyan-300 rounded-[2.5rem] blur-lg opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
-                    </div>
-
-                    <div
-                        class="relative bg-white p-10 md:p-14 rounded-4xl shadow-2xl ring-1 ring-white/50 transform transition duration-500 hover:scale-[1.02]">
-                        <img src="/logo.png" alt="AAA Company Logo" class="w-40 md:w-56 object-contain" />
-                    </div>
-                </div>
-
-                <!-- <p class="mt-8 text-white/80 text-lg font-light tracking-widest hidden md:block text-center">
-                    AAA System
-                </p> -->
+  <div class="w-full py-10">
+    <div class="mx-auto max-w-md">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="p-6 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <img src="/MBLogo.png" alt="M&B" class="h-9 w-auto" />
+            <div>
+              <h1 class="text-xl font-bold text-slate-900">เข้าสู่ระบบ</h1>
+              <p class="text-sm text-slate-500">กรอก User และ Password เพื่อเข้าใช้งาน</p>
             </div>
-
-            <div class="flex-1 flex items-center justify-center w-full">
-                <div
-                    class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20">
-                    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
-                        เข้าสู่ระบบ
-                    </h1>
-
-                    <form @submit.prevent="handleLogin" class="space-y-6">
-                        <div>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                                    </svg>
-                                </span>
-                                <input v-model="email" type="email" placeholder="Email" required
-                                    class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
-                                </span>
-                                <input v-model="password" type="password" placeholder="Password" required
-                                    class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition" />
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-sm">
-                            <label class="flex items-center gap-2 cursor-pointer select-none">
-                                <input v-model="rememberMe" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 border-gray-300" />
-                                <span class="text-gray-600">จดจำฉัน</span>
-                            </label>
-                            <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">
-                                ลืมรหัสผ่าน?
-                            </a>
-                        </div>
-
-                        <div v-if="errorMessage"
-                            class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            {{ errorMessage }}
-                        </div>
-
-                        <button type="submit" :disabled="isLoading"
-                            class="w-full bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-red-500/30 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
-                            <span v-if="!isLoading">เข้าสู่ระบบ</span>
-                            <span v-else class="flex items-center justify-center gap-2">
-                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                กำลังตรวจสอบ...
-                            </span>
-                        </button>
-
-                        <div class="text-center text-sm text-gray-500 pt-2">
-                            ยังไม่มีบัญชี?
-                            <NuxtLink to="/signup" class="text-blue-600 hover:text-blue-800 font-bold ml-1 transition">
-                                สร้างบัญชีใหม่
-                            </NuxtLink>
-                        </div>
-                    </form>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <form class="p-6 space-y-4" @submit.prevent="onLogin">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">User (Email)</label>
+            <input
+              v-model.trim="email"
+              type="email"
+              autocomplete="username"
+              placeholder="เช่น user@email.com"
+              class="w-full h-11 rounded-lg border border-slate-300 px-3
+                     focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+              :disabled="loading"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <div class="relative">
+              <input
+                v-model="password"
+                :type="showPw ? 'text' : 'password'"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="w-full h-11 rounded-lg border border-slate-300 px-3 pr-20
+                       focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                :disabled="loading"
+              />
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-3 rounded-md
+                       text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                @click="showPw = !showPw"
+                :disabled="loading"
+              >
+                {{ showPw ? "ซ่อน" : "ดู" }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="errorMsg" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {{ errorMsg }}
+          </div>
+
+          <button
+            type="submit"
+            class="w-full h-11 rounded-full bg-red-600 text-white font-semibold shadow-sm
+                   hover:bg-red-700 active:bg-red-800 transition-colors
+                   disabled:opacity-60 disabled:cursor-not-allowed"
+            :disabled="loading"
+          >
+            <span v-if="!loading">เข้าสู่ระบบ</span>
+            <span v-else class="inline-flex items-center gap-2">
+              <span class="inline-block h-4 w-4 rounded-full border-2 border-white/60 border-t-white animate-spin"></span>
+              กำลังเข้าสู่ระบบ...
+            </span>
+          </button>
+
+          <!-- ✅ ลิงก์ที่มึงต้องการ -->
+          <div class="pt-2 flex items-center justify-between text-sm">
+            <NuxtLink to="/" class="text-slate-500 hover:text-red-700">
+              ← กลับหน้าแรก
+            </NuxtLink>
+
+            <NuxtLink to="/signup" class="font-semibold text-red-600 hover:text-red-700">
+              ยังไม่มีบัญชี? สมัครสมาชิก
+            </NuxtLink>
+          </div>
+        </form>
+      </div>
+
+      <p class="mt-4 text-center text-xs text-slate-400">
+        © {{ new Date().getFullYear() }} M&B
+      </p>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-// Script คงเดิมของคุณ
-definePageMeta({
-    layout: false,
-    middleware: ['auth']
-});
+import { computed, ref } from "vue"
+import { useRoute } from "vue-router"
 
-const email = ref('');
-const password = ref('');
-const rememberMe = ref(false);
-const errorMessage = ref('');
-const isLoading = ref(false);
+useHead({ title: "Login | M&B" })
 
-const { signIn } = useAuth(); // สมมติว่ามี useAuth
+const route = useRoute()
+const redirectTo = computed(() => {
+  const r = route.query.redirect
+  return typeof r === "string" && r.startsWith("/") ? r : "/my-courses"
+})
 
-const handleLogin = async () => {
-    errorMessage.value = '';
-    isLoading.value = true;
+const email = ref("")
+const password = ref("")
+const showPw = ref(false)
 
-    try {
-        const { data, error } = await signIn(email.value, password.value, rememberMe.value);
+const loading = ref(false)
+const errorMsg = ref("")
 
-        if (error) {
-            errorMessage.value = error.message || 'ข้อมูลเข้าสู่ระบบไม่ถูกต้อง';
-            return;
-        }
+const { signIn } = useAuth()
 
-        if (data) {
-            await navigateTo('/');
-        }
-    } catch (err: any) {
-        errorMessage.value = err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-    } finally {
-        isLoading.value = false;
-    }
-};
+const onLogin = async () => {
+  errorMsg.value = ""
+
+  if (!email.value || !password.value) {
+    errorMsg.value = "กรุณากรอก Email และ Password"
+    return
+  }
+
+  loading.value = true
+  try {
+    await signIn(email.value, password.value)
+    await navigateTo(redirectTo.value)
+  } catch (e: any) {
+    errorMsg.value = e?.message || "เข้าสู่ระบบไม่สำเร็จ"
+  } finally {
+    loading.value = false
+  }
+}
 </script>

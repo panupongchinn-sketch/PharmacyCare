@@ -1,22 +1,30 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (process.server) return;
+  if (process.server) return
 
-  const { getSession } = useAuth();
+  const { getSession } = useAuth()
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/login", "/signup"];
-  const isPublicRoute = publicRoutes.includes(to.path);
+  // normalize path กันเคส /login/ หรือ /my-courses/
+  const path = (to.path || "/").replace(/\/+$/, "") || "/"
 
-  // Check if user has valid session
-  const { session } = await getSession();
+  // ✅ หน้าที่ “ต้องล็อกอิน” (เพิ่มได้ตามต้องการ)
+  const protectedPrefixes = ["/my-courses"]
+  const isProtectedRoute = protectedPrefixes.some(
+    (p) => path === p || path.startsWith(p + "/")
+  )
 
-  // If no session and trying to access protected route, redirect to login
-  if (!session && !isPublicRoute) {
-    return navigateTo("/login");
+  // ✅ หน้าสาธารณะ (เข้าดูได้)
+  const authPages = ["/login", "/signup"]
+  const isAuthPage = authPages.includes(path)
+
+  const { session } = await getSession()
+
+  // ถ้าไม่ล็อกอิน แล้วเข้าหน้า protected → ไป login
+  if (!session && isProtectedRoute) {
+    return navigateTo("/login")
   }
 
-  // If has session and trying to access login/signup, redirect to home
-  if (session && isPublicRoute) {
-    return navigateTo("/");
+  // ถ้าล็อกอินแล้ว แต่จะไป login/signup → เด้งไปหน้าคอร์สของฉัน (หรือจะเป็น "/" ก็ได้)
+  if (session && isAuthPage) {
+    return navigateTo("/my-courses")
   }
-});
+})

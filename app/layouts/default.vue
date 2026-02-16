@@ -5,7 +5,7 @@
       class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200"
     >
       <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
-        <!-- Row 1: Logo + Search + Right actions -->
+        <!-- Row 1 -->
         <div class="h-16 flex items-center gap-3 sm:gap-4">
           <!-- Logo -->
           <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
@@ -45,7 +45,7 @@
             <!-- Mobile search button -->
             <button
               class="md:hidden h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 hover:bg-slate-50"
-              @click="showMobileSearch = !showMobileSearch"
+              @click="toggleMobileSearch"
               aria-label="Open search"
               type="button"
             >
@@ -141,18 +141,56 @@
           </div>
         </div>
 
-        <!-- ✅ Row 2: Nav (ALL screens + horizontal scroll on mobile) -->
-        <nav class="flex items-center gap-4 h-12 text-sm overflow-x-auto whitespace-nowrap no-scrollbar">
-          <NuxtLink
-            v-for="item in nav"
-            :key="item.to"
-            :to="item.to"
-            class="font-semibold text-slate-800 hover:text-red-700 shrink-0"
-            :class="route.path === item.to ? 'text-red-600' : ''"
-          >
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
+        <!-- Row 2: Nav + Auth -->
+        <div class="flex items-center justify-between h-12">
+          <nav class="flex items-center gap-4 text-sm overflow-x-auto whitespace-nowrap no-scrollbar">
+            <NuxtLink
+              v-for="item in nav"
+              :key="item.to"
+              :to="item.to"
+              class="font-semibold text-slate-800 hover:text-red-700 shrink-0"
+              :class="route.path === item.to ? 'text-red-600' : ''"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </nav>
+
+          <div class="ml-4 shrink-0">
+            <!-- ✅ กันพัง: ถ้า auth ยังไม่ ready ก็โชว์ปุ่ม login ไว้ก่อน -->
+            <NuxtLink
+              v-if="!isLoggedIn"
+              to="/login"
+              class="h-9 inline-flex items-center gap-2 rounded-full bg-red-600 px-4 text-sm font-semibold text-white shadow-sm
+                     hover:bg-red-700 active:bg-red-800 transition-colors
+                     focus:outline-none focus:ring-2 focus:ring-red-300"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0" />
+              </svg>
+              เข้าระบบ
+            </NuxtLink>
+
+            <div v-else class="flex items-center gap-2">
+              <NuxtLink
+                to="/my-courses"
+                class="h-9 inline-flex items-center rounded-full bg-red-600 px-4 text-sm font-semibold text-white shadow-sm
+                       hover:bg-red-700 active:bg-red-800 transition-colors"
+              >
+                คอร์สของฉัน
+              </NuxtLink>
+
+              <button
+                type="button"
+                class="h-9 inline-flex items-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700
+                       hover:bg-slate-50"
+                @click="onLogout"
+              >
+                ออกจากระบบ
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -175,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
@@ -190,6 +228,10 @@ const nav = [
 const q = useState<string>("mb_search_q", () => "")
 const showMobileSearch = ref(false)
 
+const toggleMobileSearch = () => {
+  showMobileSearch.value = !showMobileSearch.value
+}
+
 const compareCount = ref(0)
 
 const langOpen = ref(false)
@@ -201,6 +243,34 @@ const setLang = (v: string) => {
 
 const onSearch = () => {
   showMobileSearch.value = false
+}
+
+/** ✅ auth state (กันพัง) */
+const auth = useAuth?.() as any // กันเคส auto-import พัง
+const session = auth?.session
+const init = auth?.init
+const signOut = auth?.signOut
+
+onMounted(async () => {
+  try {
+    if (init) await init()
+  } catch (e) {
+    // ไม่ต้อง throw ให้หน้าแตก
+    console.error("auth init error:", e)
+  }
+})
+
+const isLoggedIn = computed(() => {
+  // ✅ สำคัญ: กัน session undefined
+  return !!session?.value
+})
+
+const onLogout = async () => {
+  try {
+    if (signOut) await signOut()
+  } finally {
+    await navigateTo("/")
+  }
 }
 </script>
 
