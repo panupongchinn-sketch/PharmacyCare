@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- =========================
-      HEADER (ธีมเดียวกับหน้า training)
-    ========================== -->
     <div class="flex items-end justify-between gap-4 flex-wrap">
       <div>
         <h1 class="text-4xl sm:text-5xl font-bold text-slate-700 tracking-tight">
@@ -25,11 +22,7 @@
       </button>
     </div>
 
-    <!-- =========================
-      GRID
-    ========================== -->
     <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- LEFT: FORM -->
       <div class="lg:col-span-2">
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
           <div class="p-5 sm:p-6 border-b border-slate-100">
@@ -39,7 +32,7 @@
 
           <div class="p-5 sm:p-6">
             <div v-if="success" class="mb-5 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 text-sm">
-              ส่งข้อความเรียบร้อยแล้ว ✅ ขอบคุณครับ/ค่ะ
+              ส่งข้อความเรียบร้อยแล้ว ขอบคุณครับ/ค่ะ
             </div>
 
             <div v-if="error" class="mb-5 p-4 rounded-lg border border-red-200 bg-red-50 text-red-800 text-sm">
@@ -110,7 +103,7 @@
                   required
                 />
                 <div class="mt-2 text-xs text-slate-500">
-                  แนะนำ: ระบุสินค้า/รุ่น, จำนวน, จังหวัด, เวลาที่สะดวกให้ติดต่อกลับ
+                  แนะนำ: ระบุสินค้า/รุ่น, จำนวน, จังหวัด และเวลาที่สะดวกให้ติดต่อกลับ
                 </div>
               </div>
 
@@ -133,7 +126,6 @@
         </div>
       </div>
 
-      <!-- RIGHT: CONTACT CARD -->
       <div class="lg:col-span-1">
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
           <div class="p-5 sm:p-6 border-b border-slate-100">
@@ -155,7 +147,7 @@
               <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-700 border border-red-100">☎</span>
               <div>
                 <div class="font-semibold">โทร</div>
-                <div class="text-slate-600"> 0917762859</div>
+                <div class="text-slate-600">0917762859</div>
               </div>
             </div>
 
@@ -169,7 +161,7 @@
 
             <div class="pt-2">
               <div class="text-xs font-semibold text-slate-500 mb-2">เวลาทำการ</div>
-              <div class="text-slate-600">จันทร์–ศุกร์ 09:00–18:00</div>
+              <div class="text-slate-600">จันทร์-ศุกร์ 09:00-18:00</div>
             </div>
 
             <div class="pt-3 border-t border-slate-100">
@@ -185,15 +177,12 @@
           </div>
         </div>
 
-        <!-- MAP PLACEHOLDER -->
         <div class="mt-6 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
           <div class="p-5 sm:p-6 border-b border-slate-100">
             <h2 class="text-lg font-bold text-slate-800">แผนที่</h2>
-            <p class="mt-1 text-sm text-slate-500"></p>
           </div>
           <div class="p-3">
             <div class="aspect-[16/9] rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 text-sm">
-              
             </div>
           </div>
         </div>
@@ -203,9 +192,7 @@
 </template>
 
 <script setup lang="ts">
-const { $supabase } = useNuxtApp()
 const route = useRoute()
-
 useState<string>("mb_search_q", () => "")
 
 type ContactForm = {
@@ -216,6 +203,14 @@ type ContactForm = {
   subject: string
   detail: string
 }
+
+type ContactMessageRow = ContactForm & {
+  id: string
+  source_page: string
+  created_at: string
+}
+
+const CONTACT_STORAGE_KEY = "yushi_contact_messages"
 
 const form = ref<ContactForm>({
   full_name: "",
@@ -229,6 +224,31 @@ const form = ref<ContactForm>({
 const loading = ref(false)
 const error = ref("")
 const success = ref(false)
+
+const nowIso = () => new Date().toISOString()
+
+const uid = () => {
+  if (typeof globalThis !== "undefined" && (globalThis as any).crypto?.randomUUID) {
+    return (globalThis as any).crypto.randomUUID() as string
+  }
+  return `c_${Math.random().toString(16).slice(2)}_${Date.now()}`
+}
+
+const loadContactMessages = (): ContactMessageRow[] => {
+  if (typeof window === "undefined") return []
+  try {
+    const rawStorage = window.localStorage.getItem(CONTACT_STORAGE_KEY)
+    const arr = rawStorage ? (JSON.parse(rawStorage) as ContactMessageRow[]) : []
+    return Array.isArray(arr) ? arr : []
+  } catch {
+    return []
+  }
+}
+
+const saveContactMessages = (rows: ContactMessageRow[]) => {
+  if (typeof window === "undefined") return
+  window.localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(rows))
+}
 
 const resetForm = () => {
   form.value = {
@@ -255,25 +275,22 @@ const submit = async () => {
     if (!fullName) throw new Error("กรุณากรอกชื่อ-นามสกุล")
     if (!detail) throw new Error("กรุณากรอกรายละเอียด")
 
-    // ✅ ส่งให้ตรงกับ SQL: public.contact_message
-    // column: full_name, phone, company, email, subject, detail, source_page
-    const payload = {
+    const payload: ContactMessageRow = {
+      id: uid(),
       full_name: fullName,
-      phone: (form.value.phone || "").trim() || null,
-      company: (form.value.company || "").trim() || null,
-      email: (form.value.email || "").trim() || null,
-      subject: (form.value.subject || "").trim() || null,
-      detail: detail,
+      phone: (form.value.phone || "").trim(),
+      company: (form.value.company || "").trim(),
+      email: (form.value.email || "").trim(),
+      subject: (form.value.subject || "").trim(),
+      detail,
       source_page: route.fullPath,
+      created_at: nowIso(),
     }
 
-    const { error: e } = await ($supabase as any)
-      .from("contact_message")
-      .insert(payload)
+    const rows = loadContactMessages()
+    rows.unshift(payload)
+    saveContactMessages(rows)
 
-    if (e) throw e
-
-    success.value = true
     resetForm()
     success.value = true
   } catch (err: any) {

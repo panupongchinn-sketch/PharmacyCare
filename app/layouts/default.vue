@@ -1,214 +1,99 @@
-<template>
-  <div class="min-h-screen bg-white text-slate-900 flex flex-col">
-    <header
-      ref="headerEl"
-      class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200"
-    >
+﻿<template>
+  <div class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="fixed top-0 left-0 right-0 z-[70] bg-[#0B4AA2] text-white">
       <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
-        <!-- Row 1 -->
-        <div class="h-16 flex items-center gap-3 sm:gap-4">
-          <!-- Logo -->
-          <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
-            <img src="/MBLogo.png" alt="M&B" class="h-9 w-auto object-contain" />
-          </NuxtLink>
-
-          <!-- Search (desktop) -->
-          <div class="flex-1 hidden md:flex">
-            <div class="w-full max-w-2xl mx-auto flex">
-              <input
-                v-model="q"
-                type="text"
-                placeholder="Search (SKU / Name / Category)"
-                class="w-full h-10 px-4 border border-slate-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
-                @keydown.enter="onSearch"
-              />
-              <button
-                class="h-10 px-4 bg-red-600 text-white rounded-r-md hover:bg-red-700 active:bg-red-800"
-                @click="onSearch"
-                aria-label="Search"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-                  />
-                </svg>
-              </button>
+        <div class="h-10 flex items-center justify-between text-xs sm:text-sm">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 opacity-95">
+              <span class="inline-block">Tel</span>
+              <span>02-517-0688</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 opacity-95">
+              <span class="inline-block">Mail</span>
+              <span>info@yushi.co.th</span>
             </div>
           </div>
 
-          <!-- Right actions -->
-          <div class="ml-auto flex items-center gap-2 sm:gap-4">
-            <!-- Mobile search button -->
-            <button
-              class="md:hidden h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 hover:bg-slate-50"
-              @click="toggleMobileSearch"
-              aria-label="Open search"
-              type="button"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-                />
-              </svg>
-            </button>
+          <div class="flex items-center gap-3 opacity-95">
+            <span>@yushigroup</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <button class="hidden sm:flex items-center gap-2 text-sm text-slate-700 hover:text-red-700" type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h14v16H5V5z" />
-              </svg>
-              <span class="font-medium">Watch/inquiry list</span>
-            </button>
+    <div class="pt-10 min-h-screen flex flex-col">
+      <header class="sticky top-10 z-[60] bg-white border-b border-slate-200">
+        <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
+          <div class="h-16 flex items-center gap-3 sm:gap-4">
+            <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
+              <img
+                src="/MBLogo.png"
+                alt="M&B"
+                class="h-12 sm:h-14 w-auto object-contain"
+              />
+              <div class="hidden sm:block leading-tight">
+                <div class="font-extrabold tracking-tight text-slate-900">YUSHI</div>
+                <div class="text-[11px] text-slate-500 -mt-0.5">INDUSTRIAL</div>
+              </div>
+            </NuxtLink>
 
-            <button class="flex items-center gap-2 text-sm text-slate-700 hover:text-red-700" type="button">
-              <span class="relative inline-flex">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6M9 19h6M4 9h16M4 15h16" />
-                </svg>
-                <span
-                  class="absolute -top-2 -right-2 h-5 min-w-5 px-1 rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center"
-                >
-                  {{ compareCount }}
-                </span>
-              </span>
-              <span class="hidden sm:inline font-medium">Comparison</span>
-            </button>
+            <div class="flex-1"></div>
 
-            <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-
-            <!-- Language -->
-            <div class="relative flex items-center gap-2">
-              <button
-                class="text-sm text-slate-600 hover:text-red-700 flex items-center gap-1"
-                @click="langOpen = !langOpen"
-                type="button"
+            <div class="flex items-center">
+              <NuxtLink
+                v-if="!isLoggedIn"
+                to="/login"
+                class="h-9 inline-flex items-center gap-2 rounded-full bg-[#0B4AA2] px-4 text-sm font-semibold text-white shadow-sm
+                       hover:bg-[#083A7E] active:bg-[#062F67] transition-colors
+                       focus:outline-none focus:ring-2 focus:ring-[#0B4AA2]/30"
               >
-                <span class="font-medium">{{ langLabel }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                เข้าสู่ระบบ
+              </NuxtLink>
 
-              <div
-                v-if="langOpen"
-                class="absolute top-10 right-0 bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden min-w-[200px]"
-              >
+              <div v-else class="flex items-center gap-2">
                 <button
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                  @click="setLang('International | en')"
                   type="button"
+                  class="h-9 inline-flex items-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  @click="onLogout"
                 >
-                  International | en
-                </button>
-                <button
-                  class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                  @click="setLang('Thailand | th')"
-                  type="button"
-                >
-                  Thailand | th
+                  ออกจากระบบ
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Mobile Search -->
-        <div v-if="showMobileSearch" class="pb-4 md:hidden">
-          <div class="flex">
-            <input
-              v-model="q"
-              type="text"
-              placeholder="Search (SKU / Name / Category)"
-              class="w-full h-10 px-4 border border-slate-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
-              @keydown.enter="onSearch"
-            />
-            <button class="h-10 px-4 bg-red-600 text-white rounded-r-md" @click="onSearch" type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Row 2: Nav + Auth -->
-        <div class="flex items-center justify-between h-12">
-          <nav class="flex items-center gap-4 text-sm overflow-x-auto whitespace-nowrap no-scrollbar">
-            <NuxtLink
-              v-for="item in nav"
-              :key="item.to"
-              :to="item.to"
-              class="font-semibold text-slate-800 hover:text-red-700 shrink-0"
-              :class="route.path === item.to ? 'text-red-600' : ''"
-            >
-              {{ item.label }}
-            </NuxtLink>
-          </nav>
-
-          <div class="ml-4 shrink-0">
-            <!-- ✅ กันพัง: ถ้า auth ยังไม่ ready ก็โชว์ปุ่ม login ไว้ก่อน -->
-            <NuxtLink
-              v-if="!isLoggedIn"
-              to="/login"
-              class="h-9 inline-flex items-center gap-2 rounded-full bg-red-600 px-4 text-sm font-semibold text-white shadow-sm
-                     hover:bg-red-700 active:bg-red-800 transition-colors
-                     focus:outline-none focus:ring-2 focus:ring-red-300"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0" />
-              </svg>
-              เข้าระบบ
-            </NuxtLink>
-
-            <div v-else class="flex items-center gap-2">
+          <div class="h-12 flex items-center border-t border-slate-100">
+            <nav class="flex items-center gap-5 text-sm overflow-x-auto whitespace-nowrap no-scrollbar">
               <NuxtLink
-                to="/my-courses"
-                class="h-9 inline-flex items-center rounded-full bg-red-600 px-4 text-sm font-semibold text-white shadow-sm
-                       hover:bg-red-700 active:bg-red-800 transition-colors"
+                v-for="item in nav"
+                :key="item.to"
+                :to="item.to"
+                class="font-semibold text-slate-800 hover:text-[#0B4AA2] shrink-0"
+                :class="route.path === item.to ? 'text-[#0B4AA2]' : ''"
               >
-                คอร์สของฉัน
+                {{ item.label }}
               </NuxtLink>
-
-              <button
-                type="button"
-                class="h-9 inline-flex items-center rounded-full border border-slate-200 px-4 text-sm font-semibold text-slate-700
-                       hover:bg-slate-50"
-                @click="onLogout"
-              >
-                ออกจากระบบ
-              </button>
-            </div>
+            </nav>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <main class="flex-1 w-full max-w-none mx-auto px-4 sm:px-6 lg:px-10 pt-[112px] pb-10">
-      <slot />
-    </main>
+      <main class="flex-1 w-full max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-8">
+        <slot />
+      </main>
 
-    <footer class="bg-red-600 text-white mt-auto">
-      <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-6">
-        <div class="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs text-white/85">
-          <NuxtLink to="/contact" class="hover:underline">Data privacy</NuxtLink>
-          <NuxtLink to="/contact" class="hover:underline">Cookie settings</NuxtLink>
-          <NuxtLink to="/contact" class="hover:underline">Imprint</NuxtLink>
-          <NuxtLink to="/contact" class="hover:underline">General terms and conditions</NuxtLink>
-          <span class="sm:ml-auto text-white/70">© {{ new Date().getFullYear() }} M&B</span>
+      <footer class="bg-[#0B4AA2] text-white mt-auto">
+        <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-6">
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs text-white/85">
+            <NuxtLink to="/contact" class="hover:underline">Data privacy</NuxtLink>
+            <NuxtLink to="/contact" class="hover:underline">Cookie settings</NuxtLink>
+            <NuxtLink to="/contact" class="hover:underline">Imprint</NuxtLink>
+            <NuxtLink to="/contact" class="hover:underline">General terms and conditions</NuxtLink>
+            <span class="sm:ml-auto text-white/70">© {{ new Date().getFullYear() }} M&B</span>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   </div>
 </template>
 
@@ -218,73 +103,70 @@ import { useRoute } from "vue-router"
 
 const route = useRoute()
 
-const nav = [
-  { label: "ผลิตภัณฑ์", to: "/product" },
-  { label: "คอร์สอบรม", to: "/training" },
-  { label: "ใบเสนอราคา", to: "/invoice" },
-  { label: "ติดต่อเรา", to: "/contact" },
-]
-
-const q = useState<string>("mb_search_q", () => "")
-const showMobileSearch = ref(false)
-
-const toggleMobileSearch = () => {
-  showMobileSearch.value = !showMobileSearch.value
-}
-
-const compareCount = ref(0)
-
-const langOpen = ref(false)
-const langLabel = ref("International | en")
-const setLang = (v: string) => {
-  langLabel.value = v
-  langOpen.value = false
-}
-
-const onSearch = () => {
-  showMobileSearch.value = false
-}
-
-/** ✅ auth state (กันพัง) */
-const auth = useAuth?.() as any // กันเคส auto-import พัง
-const session = auth?.session
-const init = auth?.init
+const auth = useAuth?.() as any
+const user = auth?.user
+const getSession = auth?.getSession
 const signOut = auth?.signOut
 
+const showDevAdminBtn = true
+const adminTest = ref(false)
+
 onMounted(async () => {
+  adminTest.value = localStorage.getItem("ADMIN_TEST") === "1"
+
   try {
-    if (init) await init()
+    if (getSession) await getSession()
   } catch (e) {
-    // ไม่ต้อง throw ให้หน้าแตก
-    console.error("auth init error:", e)
+    console.error("getSession error:", e)
   }
 })
 
 const isLoggedIn = computed(() => {
-  // ✅ สำคัญ: กัน session undefined
-  return !!session?.value
+  const real = !!user?.value
+  return real || adminTest.value
 })
+
+const toggleAdminTest = () => {
+  adminTest.value = !adminTest.value
+  localStorage.setItem("ADMIN_TEST", adminTest.value ? "1" : "0")
+}
 
 const onLogout = async () => {
   try {
     if (signOut) await signOut()
   } finally {
+    adminTest.value = false
+    localStorage.removeItem("ADMIN_TEST")
     await navigateTo("/")
   }
 }
+
+const nav = computed(() => {
+  const base = [
+    { label: "หน้าแรก", to: "/" },
+    { label: "เกี่ยวกับเรา", to: "/about" },
+    { label: "สินค้า", to: "/product" },
+    { label: "บริการ", to: "/service" },
+    { label: "ติดต่อ", to: "/contact" },
+  ]
+
+  if (isLoggedIn.value) {
+    base.push({ label: "จัดการสินค้า", to: "/admin/products" })
+    base.push({ label: "จัดการโปรเจค", to: "/admin/projects-local" })
+    base.push({ label: "ตั้งค่า", to: "/admin/settings" })
+  }
+
+  return base
+})
 </script>
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap");
+
 * {
   font-family: "Kanit", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
