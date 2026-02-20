@@ -64,16 +64,22 @@ export const useSupabaseRest = () => {
     }
   }
 
+  const withApiKey = (url: string) => {
+    ensureEnv()
+    const sep = url.includes("?") ? "&" : "?"
+    return `${url}${sep}apikey=${encodeURIComponent(supabaseAnonKey)}`
+  }
+
   const listProducts = async (): Promise<ProductRow[]> => {
     try {
       const withBrand = await $fetch<ProductRow[]>(
-        `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,brand,category,image_url,unit,quantity,price&order=id.desc`,
+        withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,brand,category,image_url,unit,quantity,price&order=id.desc`),
         { headers: headers() }
       )
       return Array.isArray(withBrand) ? withBrand : []
     } catch {
       const withoutBrand = await $fetch<any[]>(
-        `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,price&order=id.desc`,
+        withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,price&order=id.desc`),
         { headers: headers() }
       )
       return Array.isArray(withoutBrand)
@@ -86,7 +92,7 @@ export const useSupabaseRest = () => {
     const h = { ...headers(), Prefer: "return=representation" }
     const sku = encodeURIComponent(payload.sku)
     const existing = await $fetch<any[]>(
-      `${supabaseUrl}/rest/v1/products_primary?select=id&sku=eq.${sku}&limit=1`,
+      withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id&sku=eq.${sku}&limit=1`),
       { headers: h }
     )
     if (Array.isArray(existing) && existing.length > 0) {
@@ -94,7 +100,7 @@ export const useSupabaseRest = () => {
     }
 
     try {
-      const inserted = await $fetch<any[]>(`${supabaseUrl}/rest/v1/products_primary`, {
+      const inserted = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/products_primary`), {
         method: "POST",
         headers: h,
         body: [payload],
@@ -102,7 +108,7 @@ export const useSupabaseRest = () => {
       return Array.isArray(inserted) ? inserted[0] : inserted
     } catch {
       const { brand: _brand, ...fallbackPayload } = payload
-      const inserted = await $fetch<any[]>(`${supabaseUrl}/rest/v1/products_primary`, {
+      const inserted = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/products_primary`), {
         method: "POST",
         headers: h,
         body: [fallbackPayload],
@@ -112,7 +118,7 @@ export const useSupabaseRest = () => {
   }
 
   const deleteProduct = async (id: string | number) => {
-    await $fetch(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodeURIComponent(String(id))}`, {
+    await $fetch(withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodeURIComponent(String(id))}`), {
       method: "DELETE",
       headers: { ...headers(), Prefer: "return=minimal" },
     })
@@ -122,7 +128,7 @@ export const useSupabaseRest = () => {
   const listSalesHistory = async () => {
     const query =
       "select=id,receipt_no,sold_at,payment_method,payment_label,total_qty,total_amount,cash_amount,change_amount,sales_history_items(id,product_id,product_name,sku,unit,qty,unit_price,line_total)&order=id.desc"
-    const rows = await $fetch<any[]>(`${supabaseUrl}/rest/v1/sales_history?${query}`, {
+    const rows = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/sales_history?${query}`), {
       headers: headers(),
     })
     return (Array.isArray(rows) ? rows : []).map((row) => ({
@@ -175,7 +181,7 @@ export const useSupabaseRest = () => {
     }
 
     const h = { ...headers(), Prefer: "return=representation" }
-    const insertedSale = await $fetch<any[]>(`${supabaseUrl}/rest/v1/sales_history`, {
+    const insertedSale = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/sales_history`), {
       method: "POST",
       headers: h,
       body: [salePayload],
@@ -205,7 +211,7 @@ export const useSupabaseRest = () => {
     })
 
     if (itemRows.length > 0) {
-      await $fetch(`${supabaseUrl}/rest/v1/sales_history_items`, {
+      await $fetch(withApiKey(`${supabaseUrl}/rest/v1/sales_history_items`), {
         method: "POST",
         headers: h,
         body: itemRows,
@@ -215,7 +221,7 @@ export const useSupabaseRest = () => {
   }
 
   const deleteSaleHistory = async (id: string | number) => {
-    await $fetch(`${supabaseUrl}/rest/v1/sales_history?id=eq.${encodeURIComponent(String(id))}`, {
+    await $fetch(withApiKey(`${supabaseUrl}/rest/v1/sales_history?id=eq.${encodeURIComponent(String(id))}`), {
       method: "DELETE",
       headers: { ...headers(), Prefer: "return=minimal" },
     })
