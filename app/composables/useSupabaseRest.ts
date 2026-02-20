@@ -44,8 +44,11 @@ type CreateSalePayload = {
 
 export const useSupabaseRest = () => {
   const config = useRuntimeConfig()
-  const supabaseUrl = String(config.public.supabaseUrl || "").trim()
-  const supabaseAnonKey = String(config.public.supabaseAnonKey || "").trim()
+  const fallbackSupabaseUrl = "https://ezaccpveuyilyfownpzs.supabase.co"
+  const fallbackSupabaseAnonKey =
+    "sb_publishable_lu9mwNQ95NC6C2ajzQS5Xg_pqzEIFMA"
+  const supabaseUrl = String(config.public.supabaseUrl || fallbackSupabaseUrl).trim()
+  const supabaseAnonKey = String(config.public.supabaseAnonKey || fallbackSupabaseAnonKey).trim()
 
   const ensureEnv = () => {
     if (!supabaseUrl || !supabaseAnonKey) {
