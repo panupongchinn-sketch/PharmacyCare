@@ -46,7 +46,7 @@ export const useSupabaseRest = () => {
   const config = useRuntimeConfig()
   const fallbackSupabaseUrl = "https://ezaccpveuyilyfownpzs.supabase.co"
   const fallbackSupabaseAnonKey =
-    "sb_publishable_lu9mwNQ95NC6C2ajzQS5Xg_pqzEIFMA"
+    "sb_publishable_lu9mwNQ95NC6C2ajzQSSXg_pqzEIfMA"
   const supabaseUrl = String(config.public.supabaseUrl || fallbackSupabaseUrl).trim()
   const supabaseAnonKey = String(config.public.supabaseAnonKey || fallbackSupabaseAnonKey).trim()
 
