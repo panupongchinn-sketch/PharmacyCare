@@ -1,3 +1,5 @@
+import { getSupabaseEnv } from "../utils/supabase-env"
+
 type HistoryItemRow = {
   id: number
   product_id: number | null
@@ -23,13 +25,12 @@ type HistoryRow = {
 }
 
 export default defineEventHandler(async () => {
-  const supabaseUrl = process.env.SUPABASE_URL
-  const supabaseKey = process.env.SUPABASE_KEY
+  const { supabaseUrl, supabaseKey } = getSupabaseEnv()
 
   if (!supabaseUrl || !supabaseKey) {
     throw createError({
       statusCode: 500,
-      statusMessage: "SUPABASE_URL or SUPABASE_KEY is not configured",
+      statusMessage: "Supabase env is not configured (SUPABASE_URL + SUPABASE_KEY/ANON_KEY)",
     })
   }
 
