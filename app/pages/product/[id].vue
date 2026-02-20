@@ -164,6 +164,7 @@ const fallbackImg = 'https://picsum.photos/seed/productdetail/1200/900'
 const product = ref<ProductRow | null>(null)
 const loading = ref(true)
 const error = ref('')
+const { listProducts } = useSupabaseRest()
 
 useHead(() => ({
   title: `${product.value?.name || 'ไม่พบข้อมูลสินค้า'} | ร้านขายยา`,
@@ -173,7 +174,7 @@ const loadProduct = async () => {
   loading.value = true
   error.value = ''
   try {
-    const list = await $fetch<ProductRow[]>('/api/products-primary')
+    const list = await listProducts()
     product.value = list.find((x) => String(x.id) === id.value) || null
     if (!product.value) error.value = 'ไม่พบสินค้าที่ต้องการ (id ไม่ถูกต้อง)'
   } catch (err: any) {

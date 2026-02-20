@@ -45,7 +45,7 @@
           <div v-if="loading" class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">กำลังโหลดสินค้า...</div>
 
           <div v-else-if="loadError" class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
-            โหลดสินค้าไม่สำเร็จ กรุณาตรวจสอบการตั้งค่าเซิร์ฟเวอร์ (SUPABASE_URL / SUPABASE_KEY)
+            โหลดสินค้าไม่สำเร็จ กรุณาตรวจสอบค่า NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_ANON_KEY
           </div>
 
           <div v-else class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -138,6 +138,7 @@ const fallbackImg = "/recommend-factory-type-1.jpg"
 const featuredProducts = ref<ProductItem[]>([])
 const loading = ref(true)
 const loadError = ref(false)
+const { listProducts } = useSupabaseRest()
 
 const displayBrand = (item: ProductItem) =>
   (item.brand || "").trim() || (item.category || "").trim() || "-"
@@ -151,7 +152,7 @@ const loadFeatured = async () => {
   loading.value = true
   loadError.value = false
   try {
-    const rows = await $fetch<ProductItem[]>("/api/products-primary")
+    const rows = await listProducts()
     featuredProducts.value = Array.isArray(rows) && rows.length ? rows.slice(0, 8) : []
   } catch {
     featuredProducts.value = []

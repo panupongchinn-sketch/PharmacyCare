@@ -161,6 +161,7 @@ type ProductRow = {
 }
 
 const fallbackImg = 'https://picsum.photos/seed/product/1200/900'
+const { listProducts } = useSupabaseRest()
 
 const products = ref<ProductRow[]>([])
 const loading = ref(true)
@@ -236,7 +237,7 @@ const loadProducts = async () => {
   loading.value = true
   error.value = ''
   try {
-    const arr = await $fetch<ProductRow[]>('/api/products-primary')
+    const arr = await listProducts()
     products.value = Array.isArray(arr)
       ? arr.map((p) => ({
           ...p,

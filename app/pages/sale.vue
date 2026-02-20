@@ -250,6 +250,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 useHead({ title: 'ขายยา | POS' })
+const supa = useSupabaseRest()
 
 type ProductRow = {
   id: string | number
@@ -438,18 +439,15 @@ const pay = async () => {
   }
 
   try {
-    await $fetch("/api/sales-history", {
-      method: "POST",
-      body: {
-        receiptNo,
-        paymentMethod: paymentMethod.value,
-        paymentLabel: paymentLabel.value,
-        totalQty: finalQty,
-        total: finalTotal,
-        cash: paid,
-        change,
-        lines,
-      },
+    await supa.createSaleHistory({
+      receiptNo,
+      paymentMethod: paymentMethod.value,
+      paymentLabel: paymentLabel.value,
+      totalQty: finalQty,
+      total: finalTotal,
+      cash: paid,
+      change,
+      lines,
     })
   } catch (err: any) {
     error.value =
@@ -472,7 +470,7 @@ const printReceipt = () => {
 
 const loadProducts = async () => {
   try {
-    const rows = await $fetch<ProductRow[]>('/api/products-primary')
+    const rows = await supa.listProducts()
     products.value = Array.isArray(rows) ? rows : []
   } catch {
     products.value = []

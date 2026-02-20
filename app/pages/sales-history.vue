@@ -166,6 +166,7 @@
 import { computed, onMounted, ref } from "vue"
 
 useHead({ title: "ประวัติการขาย | Pharmacy Care" })
+const supa = useSupabaseRest()
 
 type ReceiptLine = {
   id: string | number
@@ -218,7 +219,7 @@ const loadHistory = async () => {
   loading.value = true
   error.value = ""
   try {
-    const rows = await $fetch<SaleHistoryEntry[]>("/api/sales-history")
+    const rows = await supa.listSalesHistory()
     sales.value = Array.isArray(rows) ? rows : []
   } catch (err: any) {
     sales.value = []
@@ -240,7 +241,7 @@ const openDetail = (sale: SaleHistoryEntry) => {
 const removeSale = async (id: string) => {
   error.value = ""
   try {
-    await $fetch(`/api/sales-history/${id}`, { method: "DELETE" })
+    await supa.deleteSaleHistory(id)
     sales.value = sales.value.filter((x) => x.id !== id)
     if (selected.value?.id === id) {
       selected.value = null

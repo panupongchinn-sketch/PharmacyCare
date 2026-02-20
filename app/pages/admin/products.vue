@@ -237,6 +237,7 @@
 import { computed, onMounted, reactive, ref } from "vue"
 
 useHead({ title: "Admin | Products" })
+const supa = useSupabaseRest()
 
 type ProductRow = {
   id: string | number
@@ -331,7 +332,7 @@ const loadProducts = async () => {
   loading.value = true
   errorMsg.value = ""
   try {
-    const rows = await $fetch<ProductRow[]>("/api/products-primary")
+    const rows = await supa.listProducts()
     products.value = Array.isArray(rows) ? rows : []
   } catch (e: any) {
     errorMsg.value = e?.data?.statusMessage || e?.message || "โหลดสินค้าไม่สำเร็จ"
@@ -371,7 +372,7 @@ const createProduct = async () => {
 
   loading.value = true
   try {
-    await $fetch("/api/products-primary", { method: "POST", body: payload })
+    await supa.createProduct(payload)
     successMsg.value = "เพิ่มสินค้าสำเร็จ"
     resetForm()
     await loadProducts()
@@ -389,7 +390,7 @@ const deleteProduct = async (id: string | number) => {
 
   loading.value = true
   try {
-    await $fetch(`/api/products-primary/${id}`, { method: "DELETE" })
+    await supa.deleteProduct(id)
     successMsg.value = "ลบสินค้าแล้ว"
     await loadProducts()
   } catch (e: any) {
