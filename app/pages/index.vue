@@ -1,193 +1,113 @@
-<template>
-  <div class="min-h-screen bg-[var(--wmc-bg)] text-[var(--wmc-text)]">
-    <header class="sticky top-0 z-40 border-b border-emerald-100 bg-white/95 backdrop-blur">
-      <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-3 sm:h-20 sm:px-6">
-        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[var(--wmc-primary)] text-[var(--wmc-primary)] sm:h-12 sm:w-12">
-            <span class="text-lg font-extrabold">W</span>
-          </div>
-          <div class="min-w-0 leading-tight">
-            <p class="hidden text-xs text-emerald-700 sm:block sm:text-sm">โรงพยาบาลเวิลด์เมดิคอล</p>
-            <p class="truncate text-sm font-bold text-emerald-900 sm:text-lg">บริการรถพยาบาลฉุกเฉิน</p>
-          </div>
-        </div>
-
-        <nav class="hidden items-center gap-7 text-sm font-semibold text-slate-700 lg:flex">
-          <a href="#" class="transition hover:text-[var(--wmc-primary)]">หน้าหลัก</a>
-          <a href="#service" class="transition hover:text-[var(--wmc-primary)]">บริการรถพยาบาล</a>
-          <a href="#packages" class="transition hover:text-[var(--wmc-primary)]">ข้อมูลบริการ</a>
-          <a href="#contact" class="transition hover:text-[var(--wmc-primary)]">ติดต่อเรา</a>
-        </nav>
-
-        <a
-          href="tel:023407777"
-          class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800 sm:px-5 sm:text-sm"
-        >
-          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.1 5.18 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.64 2.6a2 2 0 0 1-.45 2.11L9.1 10.62a16 16 0 0 0 4.28 4.28l1.19-1.2a2 2 0 0 1 2.11-.45c.83.31 1.7.52 2.6.64A2 2 0 0 1 22 16.92z"/>
-          </svg>
-          <span class="hidden sm:inline">02 340 7777</span>
-          <span class="sm:hidden">โทร</span>
-        </a>
+﻿<template>
+  <div class="min-h-screen bg-slate-50 text-slate-900">
+    <section id="home" class="relative isolate overflow-hidden">
+      <div class="absolute inset-0">
+        <img src="/recommend-factory-type-1.jpg" alt="hero" class="h-full w-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/70 via-emerald-700/40 to-emerald-400/30"></div>
       </div>
-    </header>
 
-    <section class="relative isolate h-[360px] w-full overflow-hidden sm:h-[520px]">
-      <Transition name="fly-left" mode="out-in">
-        <img
-          :key="heroSlides[activeHeroSlide]"
-          :src="heroSlides[activeHeroSlide]"
-          alt="รถพยาบาลฉุกเฉิน"
-          class="h-full w-full object-cover"
-        />
-      </Transition>
-      <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/45 via-emerald-400/25 to-emerald-300/35"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_30%,rgba(255,255,255,0.28),transparent_45%),radial-gradient(circle_at_82%_24%,rgba(110,231,183,0.25),transparent_42%),linear-gradient(to_bottom,rgba(16,185,129,0.18),rgba(255,255,255,0.06))]"></div>
-
-      <div class="absolute inset-0 mx-auto flex h-full w-full max-w-7xl items-center px-3 sm:px-6">
-        <div class="max-w-3xl rounded-2xl border border-white/35 bg-white/8 p-4 text-white shadow-[0_8px_40px_rgba(16,185,129,0.2)] backdrop-blur-md sm:p-8">
-          <p class="text-[11px] font-semibold tracking-[0.2em] text-emerald-200 sm:text-sm sm:tracking-[0.25em]">บริการฉุกเฉินตลอด 24 ชั่วโมง</p>
-          <h1 class="mt-2 text-3xl font-extrabold leading-tight sm:mt-3 sm:text-6xl">บริการรถพยาบาลฉุกเฉิน</h1>
-          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-emerald-50/90 sm:mt-4 sm:text-lg">
-            บริการรับส่งผู้ป่วยโดยทีมบุคลากรทางการแพทย์ พร้อมอุปกรณ์ช่วยชีวิตมาตรฐาน รองรับพื้นที่กรุงเทพฯ และปริมณฑล
+      <div class="relative mx-auto flex min-h-[420px] w-full max-w-7xl items-center px-4 py-12 sm:min-h-[520px] sm:px-6">
+        <div class="max-w-3xl rounded-3xl border border-white/35 bg-white/10 p-6 text-white shadow-xl backdrop-blur-md sm:p-8">
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-100">Trusted Pharmacy</p>
+          <h1 class="mt-3 text-3xl font-extrabold leading-tight sm:text-5xl">เลือกซื้อยาและเวชภัณฑ์ได้ง่ายในที่เดียว</h1>
+          <p class="mt-4 text-sm leading-relaxed text-emerald-50/95 sm:text-lg">
+            รวมสินค้าสำคัญสำหรับดูแลสุขภาพประจำบ้าน พร้อมข้อมูลสินค้าอ่านง่าย และหน้ารายละเอียดที่ค้นหาไว
           </p>
-
-          <div class="mt-5 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
-            <a href="#contact" class="inline-flex w-full items-center justify-center rounded-xl bg-[var(--wmc-accent)] px-5 py-2.5 text-sm font-bold text-emerald-950 transition hover:brightness-95 sm:w-auto sm:px-6 sm:py-3">
-              เรียกรถพยาบาลทันที
-            </a>
-            <a href="#service" class="inline-flex w-full items-center justify-center rounded-xl border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto sm:px-6 sm:py-3">
-              ดูรายละเอียดบริการ
-            </a>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <NuxtLink
+              to="/product"
+              class="inline-flex items-center justify-center rounded-xl bg-amber-300 px-6 py-3 text-sm font-extrabold text-emerald-950 transition hover:brightness-95"
+            >
+              เลือกดูสินค้า
+            </NuxtLink>
+            <NuxtLink
+              to="/contact"
+              class="inline-flex items-center justify-center rounded-xl border border-white/50 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              ปรึกษาเภสัชกร
+            </NuxtLink>
           </div>
         </div>
       </div>
     </section>
 
     <main>
-      <section id="service" class="relative overflow-hidden bg-[#f7f8f7] py-16 sm:py-20">
-        <div class="pointer-events-none absolute inset-0 opacity-70">
-          <div class="plus-shape left-[4%] top-[18%]"></div>
-          <div class="plus-shape left-[22%] top-[64%]"></div>
-          <div class="plus-shape left-[78%] top-[22%]"></div>
-          <div class="plus-shape left-[90%] top-[58%]"></div>
-          <div class="plus-shape left-[52%] top-[76%]"></div>
-        </div>
-
-        <div class="relative mx-auto grid w-full max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-center">
-          <div class="lg:col-span-6">
-            <p class="text-base font-semibold text-slate-700">บริการสำหรับผู้ป่วย</p>
-            <h2 class="mt-3 text-3xl font-extrabold leading-tight text-emerald-900 sm:text-6xl">บริการรถฉุกเฉิน</h2>
-            <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">
-              เพราะเราพร้อมสำหรับการบริการสำหรับลูกค้าทุกท่าน เราจึงเตรียมสิ่งอำนวยความสะดวกไว้อย่างครบครัน
-              ไม่ว่าจะเป็นสถานที่จอดรถที่กว้างขวาง สะดวกสบาย รวมถึงรักษาความปลอดภัย
-            </p>
-
-            <a
-              href="#contact"
-              class="mt-7 inline-flex items-center rounded-lg bg-emerald-700 px-7 py-3 text-base font-semibold text-white transition hover:bg-emerald-800"
-            >
-              ดูรายละเอียด
-            </a>
+      <section id="featured" class="py-14 sm:py-20">
+        <div class="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-emerald-700">Featured Products</p>
+              <h2 class="mt-1 text-3xl font-extrabold text-emerald-900 sm:text-5xl">สินค้าแนะนำ</h2>
+            </div>
+            <NuxtLink to="/product" class="text-sm font-bold text-emerald-700 hover:underline">ดูทั้งหมด -></NuxtLink>
           </div>
 
-          <div class="lg:col-span-6">
-            <div class="relative">
-              <div class="absolute -bottom-4 -right-4 h-full w-full rounded-2xl bg-black/6"></div>
-              <img
-                src="/rectangle_1015.jpg"
-                alt="บริการรถพยาบาลฉุกเฉิน"
-                class="relative h-[230px] w-full rounded-2xl object-cover shadow-sm sm:h-[360px]"
-              />
-            </div>
+          <div v-if="loading" class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">กำลังโหลดสินค้า...</div>
+
+          <div v-else class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <NuxtLink
+              v-for="item in featuredProducts"
+              :key="item.id"
+              :to="`/product/${item.id}`"
+              class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              <div class="relative aspect-[4/3] overflow-hidden border-b border-slate-100 bg-white">
+                <img
+                  :src="item.image_url || fallbackImg"
+                  :alt="item.name || 'product'"
+                  class="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+
+              <div class="space-y-3 p-4 sm:p-5">
+                <h3 class="two-line product-title text-[1.05rem] font-extrabold leading-snug text-slate-900">{{ item.name || "-" }}</h3>
+                <div class="space-y-1 text-sm text-slate-700">
+                  <p><span class="font-extrabold text-slate-900">แบรนด์:</span> {{ displayBrand(item) }}</p>
+                  <p><span class="font-extrabold text-slate-900">SKU:</span> {{ item.sku || "-" }}</p>
+                  <p><span class="font-extrabold text-slate-900">หมวดหมู่:</span> {{ item.category || "-" }}</p>
+                  <p><span class="font-extrabold text-slate-900">หน่วยขาย:</span> {{ item.unit || "-" }}</p>
+                </div>
+                <p class="text-lg font-extrabold text-emerald-700">{{ formatPrice(item.price) }}</p>
+                <div class="pt-1">
+                  <span class="text-sm font-extrabold text-[#0B4AA2] group-hover:underline">ดูรายละเอียดสินค้า &gt;</span>
+                </div>
+              </div>
+            </NuxtLink>
           </div>
         </div>
       </section>
 
-      <section id="packages" class="bg-[#f7f8f7] py-14 sm:py-20">
-        <div class="mx-auto w-full max-w-4xl px-4 sm:px-6">
-          <h3 class="text-2xl font-extrabold leading-tight text-emerald-900 sm:text-5xl">
-            โรงพยาบาลไทยนครินทร์ มีรถพยาบาลฉุกเฉิน (Ambulance) ที่มีบุคลากร
-            และอุปกรณ์ทางการแพทย์ที่พร้อมให้การช่วยเหลือผู้ป่วยอย่างมีคุณภาพ ด้วยมาตรฐานวิชาชีพ
-          </h3>
-          <p class="mt-5 text-base leading-relaxed text-slate-800 sm:text-lg">
-            มีการทำงานเป็นทีม และการประสานงานอย่างรวดเร็วและปลอดภัย กรณีผู้ป่วยวิกฤติต่อเนื่องที่บ้านมีเหตุฉุกเฉิน
-            ผู้ดูแลสามารถเรียกใช้บริการรถฉุกเฉิน ดังนี้
-          </p>
-
-          <ul class="mt-8 space-y-4 text-base leading-relaxed text-slate-800 sm:text-lg">
-            <li class="flex gap-3">
-              <span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
-              ชื่อ - สกุล ผู้แจ้ง พร้อมหมายเลขโทรศัพท์ เพื่อให้โรงพยาบาลสามารถติดต่อกลับได้ รวมทั้งให้คำแนะนำเบื้องต้น
-            </li>
-            <li class="flex gap-3">
-              <span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
-              โรค อาการ การหายใจและชีพจรของผู้ป่วย เพื่อให้ผู้ป่วยได้รับการมาถึงอย่างรวดเร็วพร้อมทั้งจัดเตรียมแพทย์ เครื่องมือ และอุปกรณ์ประจำรถ
-            </li>
-            <li class="flex gap-3">
-              <span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
-              สถานที่พักอาศัยของผู้ป่วย เพื่อให้รถฉุกเฉินมารับได้สะดวกและรวดเร็ว
-            </li>
-          </ul>
+      <section id="benefits" class="bg-white py-14 sm:py-20">
+        <div class="mx-auto grid w-full max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-3">
+          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
+            <h3 class="text-xl font-extrabold text-emerald-900">ข้อมูลชัดเจน</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700">ดูชื่อยา หมวดหมู่ ราคา และหน่วยขายได้ทันทีในหน้าเดียว</p>
+          </article>
+          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
+            <h3 class="text-xl font-extrabold text-emerald-900">ค้นหาไว</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700">เข้าสู่หน้าสินค้าเพื่อค้นหาตามชื่อ SKU และหมวดหมู่ได้รวดเร็ว</p>
+          </article>
+          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
+            <h3 class="text-xl font-extrabold text-emerald-900">พร้อมให้คำแนะนำ</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-700">มีช่องทางติดต่อสอบถามก่อนตัดสินใจเลือกสินค้า</p>
+          </article>
         </div>
       </section>
     </main>
 
-    <footer id="contact" class="bg-[#e9e9e9]">
-      <div class="mx-auto grid w-full max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
+    <footer id="contact" class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p class="text-2xl font-extrabold text-emerald-900">ไทยนครินทร์</p>
-          <p class="mt-4 text-base leading-relaxed text-slate-700">
-            345 ถนนเทพรัตน ตร.3.5 แขวงบางนาเหนือ เขตบางนา กรุงเทพฯ 10260
-          </p>
-          <p class="mt-4 text-base text-slate-700">โทร 0 2340 7777 , 02 361 2727</p>
-          <p class="mt-1 text-base text-slate-700">Email: info@thainakarin.co.th</p>
+          <p class="text-xl font-extrabold text-emerald-900">Pharmacy Care</p>
+          <p class="mt-1 text-sm text-slate-700">ติดต่อสอบถามสินค้าและคำแนะนำการใช้งาน</p>
         </div>
-
-        <div>
-          <h4 class="text-2xl font-bold text-emerald-900">บริการของเรา</h4>
-          <ul class="mt-4 space-y-2 text-base text-slate-700">
-            <li>ศูนย์และคลินิกบริการ</li>
-            <li>แพ็กเกจสุขภาพ</li>
-            <li>โปรโมชั่น</li>
-            <li>นัดหมายแพทย์</li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-2xl font-bold text-emerald-900">เกี่ยวกับเรา</h4>
-          <ul class="mt-4 space-y-2 text-base text-slate-700">
-            <li>รู้จักไทยนครินทร์</li>
-            <li>นักลงทุนสัมพันธ์</li>
-            <li>ผู้บริหารโรงพยาบาล</li>
-            <li>ข่าวสารไทยนครินทร์</li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="text-2xl font-bold text-emerald-900">ติดต่อเรา</h4>
-          <ul class="mt-4 space-y-2 text-base text-slate-700">
-            <li>ติดต่อเรา</li>
-            <li>ร่วมงานกับเรา</li>
-          </ul>
-          <div class="mt-6 flex gap-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">f</span>
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">ig</span>
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">yt</span>
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">ln</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-emerald-900 text-white">
-        <div class="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 text-xs sm:px-6 md:flex-row md:items-center md:justify-between">
-          <div class="flex flex-wrap gap-4 text-white/90">
-            <span>นโยบายคุกกี้</span>
-            <span>นโยบายความเป็นส่วนตัว</span>
-            <span>นโยบายความเป็นส่วนตัวสำหรับผู้ใช้บริการและลูกค้าทั่วไป</span>
-            <span>นโยบายความเป็นส่วนตัวสำหรับหน่วยงานภายนอกและผู้มาติดต่อทางธุรกิจ</span>
-          </div>
-          <span class="text-white/90">© 2026 All Rights Reserved.</span>
+        <div class="flex gap-3">
+          <NuxtLink to="/product" class="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-800">
+            เลือกสินค้า
+          </NuxtLink>
+          <NuxtLink to="/contact" class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100">
+            ติดต่อร้านยา
+          </NuxtLink>
         </div>
       </div>
     </footer>
@@ -195,85 +115,71 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { onMounted, ref } from "vue"
 
-const heroSlides = [
-  "/IMG_3356-1040x693-1.jpg",
-  "/ablvan1.jpg",
-  "/rectangle_1015.jpg",
-]
-
-const activeHeroSlide = ref(0)
-let heroSliderTimer: ReturnType<typeof setInterval> | null = null
-
-const nextHeroSlide = () => {
-  activeHeroSlide.value = (activeHeroSlide.value + 1) % heroSlides.length
+type ProductItem = {
+  id: string | number
+  sku: string | null
+  name: string | null
+  brand?: string | null
+  category: string | null
+  image_url: string | null
+  unit: string | null
+  price: number | null
 }
 
-onMounted(() => {
-  heroSliderTimer = setInterval(nextHeroSlide, 3000)
-})
+useHead({ title: "หน้าแรก | ร้านขายยา" })
 
-onBeforeUnmount(() => {
-  if (heroSliderTimer) clearInterval(heroSliderTimer)
-})
+const fallbackImg = "/recommend-factory-type-1.jpg"
+const featuredProducts = ref<ProductItem[]>([])
+const loading = ref(true)
+
+const fallbackProducts: ProductItem[] = [
+  { id: "f1", name: "ยาแก้ปวดลดไข้", category: "Pain & Fever", sku: "PARA-500", unit: "แผง", price: 45, image_url: "/recommend-factory-type-1.jpg" },
+  { id: "f2", name: "ยาแก้แพ้", category: "Allergy", sku: "ALL-010", unit: "กล่อง", price: 120, image_url: "/factory-layout.jpg" },
+  { id: "f3", name: "ยาลดกรด", category: "Digestive", sku: "DIG-205", unit: "ขวด", price: 89, image_url: "/rectangle_1015.jpg" },
+  { id: "f4", name: "เวชภัณฑ์ทำแผล", category: "First Aid", sku: "FA-332", unit: "ชุด", price: 199, image_url: "/IMG_3356-1040x693-1.jpg" },
+]
+
+const displayBrand = (item: ProductItem) =>
+  (item.brand || "").trim() || (item.category || "").trim() || "-"
+
+const formatPrice = (value: number | null) => {
+  if (typeof value !== "number") return "สอบถามราคา"
+  return `${value.toLocaleString("th-TH")} บาท`
+}
+
+const loadFeatured = async () => {
+  loading.value = true
+  try {
+    const rows = await $fetch<ProductItem[]>("/api/products-primary")
+    featuredProducts.value = Array.isArray(rows) && rows.length ? rows.slice(0, 8) : fallbackProducts
+  } catch {
+    featuredProducts.value = fallbackProducts
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadFeatured)
 </script>
 
 <style scoped>
-:root {
-  --wmc-primary: #006b4f;
-  --wmc-accent: #f5c252;
-  --wmc-bg: #f1f8f5;
-  --wmc-text: #0f172a;
+.two-line {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.2rem;
 }
 
-.plus-shape {
-  position: absolute;
-  width: 76px;
-  height: 76px;
+.one-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.plus-shape::before,
-.plus-shape::after {
-  content: "";
-  position: absolute;
-  background: transparent;
-  border: 2px solid rgba(15, 23, 42, 0.06);
-  border-radius: 4px;
-}
-
-.plus-shape::before {
-  left: 30px;
-  top: 0;
-  width: 16px;
-  height: 76px;
-}
-
-.plus-shape::after {
-  left: 0;
-  top: 30px;
-  width: 76px;
-  height: 16px;
-}
-
-.fly-left-enter-active,
-.fly-left-leave-active {
-  transition: transform 0.6s ease, opacity 0.6s ease;
-}
-
-.fly-left-enter-from {
-  transform: translateX(-16%);
-  opacity: 0;
-}
-
-.fly-left-leave-to {
-  transform: translateX(16%);
-  opacity: 0;
-}
-
-.fly-left-enter-to,
-.fly-left-leave-from {
-  transform: translateX(0);
-  opacity: 1;
+.product-title {
+  overflow-wrap: anywhere;
 }
 </style>

@@ -1,23 +1,23 @@
 ﻿<template>
   <div class="product-page min-h-screen py-8 sm:py-10">
-    <section class="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
+    <section class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
       <div class="hero-card relative overflow-hidden rounded-3xl border border-slate-200/80 p-6 sm:p-8">
         <div class="pointer-events-none absolute inset-0 hero-bg" aria-hidden="true"></div>
         <div class="pointer-events-none absolute inset-0 hero-overlay" aria-hidden="true"></div>
 
         <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div class="max-w-2xl">
-            <p class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-widest text-cyan-100 uppercase">
-              Product Catalog
+            <p class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-100">
+              Pharmacy Catalog
             </p>
-            <h1 class="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-4xl">สินค้าของเรา</h1>
+            <h1 class="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-4xl">รายการสินค้าในร้านยา</h1>
             <p class="mt-2 text-sm leading-relaxed text-slate-200">
-              เลือกดูสินค้าแยกตามแบรนด์ พร้อมรายละเอียดและรูปภาพ สำหรับงานอุตสาหกรรม
+              ค้นหายาและเวชภัณฑ์ตามชื่อสินค้า SKU หรือแบรนด์ พร้อมดูรายละเอียดแต่ละรายการได้ทันที
             </p>
             <div class="mt-4 text-xs text-slate-200/90">
               พบสินค้า
               <span class="font-extrabold text-white">{{ totalFiltered }}</span>
-              จากทั้งหมด
+              รายการ จากทั้งหมด
               <span class="font-extrabold text-white">{{ products.length }}</span>
               รายการ
             </div>
@@ -33,14 +33,14 @@
         </div>
       </div>
 
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div class="sm:col-span-2 lg:col-span-2">
             <label class="mb-1 block text-xs font-semibold text-slate-600">ค้นหาสินค้า</label>
             <input
               v-model.trim="search"
               type="text"
-              placeholder="ค้นหาชื่อสินค้า, SKU, หมวดหมู่"
+              placeholder="พิมพ์ชื่อยา, SKU, แบรนด์"
               class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-800 outline-none transition focus:border-[#0B4AA2] focus:bg-white focus:ring-2 focus:ring-[#0B4AA2]/15"
             />
           </div>
@@ -51,7 +51,7 @@
               v-model="selectedBrand"
               class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-800 outline-none transition focus:border-[#0B4AA2] focus:bg-white focus:ring-2 focus:ring-[#0B4AA2]/15"
             >
-              <option value="all">ทุกแบรนด์</option>
+              <option value="all">ทั้งหมด</option>
               <option v-for="brand in brands" :key="brand" :value="brand">{{ brand }}</option>
             </select>
           </div>
@@ -67,14 +67,14 @@
         </div>
 
         <div v-else-if="error" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-          <div class="font-bold">โหลดข้อมูลไม่ได้</div>
+          <div class="font-bold">โหลดข้อมูลไม่สำเร็จ</div>
           <div class="mt-1 text-sm">{{ error }}</div>
           <button
             type="button"
             class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
             @click="loadProducts"
           >
-            ลองอีกครั้ง
+            ลองใหม่อีกครั้ง
           </button>
         </div>
 
@@ -89,7 +89,7 @@
           v-else-if="!filteredGroupedByBrand.length"
           class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-600"
         >
-          ไม่พบสินค้าที่ตรงกับเงื่อนไขค้นหา
+          ไม่พบสินค้าที่ตรงกับคำค้นหา
         </div>
 
         <div v-else class="space-y-9">
@@ -124,14 +124,14 @@
                   </h3>
 
                   <div class="space-y-1 text-xs text-slate-600">
-                    <div><span class="font-bold text-slate-800">Brand:</span> {{ p.brand || '-' }}</div>
+                    <div><span class="font-bold text-slate-800">แบรนด์:</span> {{ p.brand || '-' }}</div>
                     <div><span class="font-bold text-slate-800">SKU:</span> {{ p.sku || '-' }}</div>
-                    <div><span class="font-bold text-slate-800">Category:</span> {{ p.category || '-' }}</div>
-                    <div><span class="font-bold text-slate-800">Unit:</span> {{ p.unit || '-' }}</div>
+                    <div><span class="font-bold text-slate-800">หมวดหมู่:</span> {{ p.category || '-' }}</div>
+                    <div><span class="font-bold text-slate-800">หน่วยขาย:</span> {{ p.unit || '-' }}</div>
                   </div>
 
                   <div class="pt-1">
-                    <span class="text-sm font-bold text-[#0B4AA2] group-hover:underline">View details &gt;</span>
+                    <span class="text-sm font-bold text-[#0B4AA2] group-hover:underline">ดูรายละเอียดสินค้า &gt;</span>
                   </div>
                 </div>
               </NuxtLink>
@@ -146,20 +146,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-useHead({ title: 'สินค้า | Yushi Industrial' })
+useHead({ title: 'สินค้า | ร้านขายยา' })
 
 type ProductRow = {
-  id: string
+  id: string | number
   sku: string | null
   name: string | null
   category: string | null
   image_url: string | null
   unit: string | null
   brand: string | null
+  quantity?: number | null
+  price?: number | null
 }
 
-const PRODUCTS_KEY = "products"
-const { getValue } = useSharedStore()
 const fallbackImg = 'https://picsum.photos/seed/product/1200/900'
 
 const products = ref<ProductRow[]>([])
@@ -236,8 +236,13 @@ const loadProducts = async () => {
   loading.value = true
   error.value = ''
   try {
-    const arr = await getValue<ProductRow>(PRODUCTS_KEY)
-    products.value = Array.isArray(arr) ? (arr as ProductRow[]) : []
+    const arr = await $fetch<ProductRow[]>('/api/products-primary')
+    products.value = Array.isArray(arr)
+      ? arr.map((p) => ({
+          ...p,
+          brand: p.brand ?? p.category ?? null,
+        }))
+      : []
   } catch (err: any) {
     error.value = err?.message || 'Failed to load products'
     products.value = []
@@ -260,7 +265,7 @@ onMounted(() => {
 }
 
 .hero-bg {
-  background-image: url('/factory-layout.jpg');
+  background-image: url('/recommend-factory-type-1.jpg');
   background-size: cover;
   background-position: center;
   filter: saturate(0.8) contrast(0.95);

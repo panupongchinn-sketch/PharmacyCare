@@ -1,17 +1,13 @@
-<template>
+﻿<template>
   <div>
-    <div class="flex items-end justify-between gap-4 flex-wrap">
+    <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 class="text-4xl sm:text-5xl font-bold text-slate-700 tracking-tight">
-          ติดต่อเรา
-        </h1>
-        <p class="mt-2 text-sm text-slate-500">
-          ส่งข้อความหาเราได้เลย ทีมงานจะติดต่อกลับโดยเร็ว
-        </p>
+        <h1 class="text-4xl font-bold tracking-tight text-slate-700 sm:text-5xl">ติดต่อเรา</h1>
+        <p class="mt-2 text-sm text-slate-500">ส่งข้อความหาเราได้เลย ทีมงานจะติดต่อกลับโดยเร็ว</p>
       </div>
 
       <button
-        class="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 hover:bg-slate-50 text-sm"
+        class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50"
         type="button"
         @click="resetForm"
       >
@@ -22,31 +18,31 @@
       </button>
     </div>
 
-    <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
       <div class="lg:col-span-2">
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-          <div class="p-5 sm:p-6 border-b border-slate-100">
+        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 p-5 sm:p-6">
             <h2 class="text-lg font-bold text-slate-800">ส่งข้อความ / ขอข้อมูลเพิ่มเติม</h2>
             <p class="mt-1 text-sm text-slate-500">กรอกข้อมูลให้ครบเพื่อให้เราติดต่อกลับได้ถูกต้อง</p>
           </div>
 
           <div class="p-5 sm:p-6">
-            <div v-if="success" class="mb-5 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 text-sm">
+            <div v-if="success" class="mb-5 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
               ส่งข้อความเรียบร้อยแล้ว ขอบคุณครับ/ค่ะ
             </div>
 
-            <div v-if="error" class="mb-5 p-4 rounded-lg border border-red-200 bg-red-50 text-red-800 text-sm">
+            <div v-if="error" class="mb-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
               {{ error }}
             </div>
 
             <form class="space-y-5" @submit.prevent="submit">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label class="block text-sm font-semibold text-slate-700">ชื่อ-นามสกุล *</label>
                   <input
                     v-model.trim="form.full_name"
                     type="text"
-                    class="mt-2 w-full h-11 px-4 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                    class="mt-2 h-11 w-full rounded-md border border-slate-300 px-4 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                     placeholder="ชื่อลูกค้า"
                     required
                   />
@@ -57,7 +53,7 @@
                   <input
                     v-model.trim="form.phone"
                     type="tel"
-                    class="mt-2 w-full h-11 px-4 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                    class="mt-2 h-11 w-full rounded-md border border-slate-300 px-4 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                     placeholder="เช่น 08x-xxx-xxxx"
                   />
                 </div>
@@ -67,7 +63,7 @@
                   <input
                     v-model.trim="form.company"
                     type="text"
-                    class="mt-2 w-full h-11 px-4 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                    class="mt-2 h-11 w-full rounded-md border border-slate-300 px-4 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                     placeholder="ชื่อบริษัท (ถ้ามี)"
                   />
                 </div>
@@ -77,7 +73,7 @@
                   <input
                     v-model.trim="form.email"
                     type="email"
-                    class="mt-2 w-full h-11 px-4 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                    class="mt-2 h-11 w-full rounded-md border border-slate-300 px-4 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                     placeholder="name@company.com"
                   />
                 </div>
@@ -88,7 +84,7 @@
                 <input
                   v-model.trim="form.subject"
                   type="text"
-                  class="mt-2 w-full h-11 px-4 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                  class="mt-2 h-11 w-full rounded-md border border-slate-300 px-4 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                   placeholder="เช่น ขอใบเสนอราคา / สอบถามสินค้า / สอบถามคอร์ส"
                 />
               </div>
@@ -98,7 +94,7 @@
                 <textarea
                   v-model.trim="form.detail"
                   rows="6"
-                  class="mt-2 w-full px-4 py-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
+                  class="mt-2 w-full rounded-md border border-slate-300 px-4 py-3 focus:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200"
                   placeholder="พิมพ์รายละเอียดที่ต้องการให้เราช่วย..."
                   required
                 />
@@ -107,13 +103,11 @@
                 </div>
               </div>
 
-              <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div class="text-xs text-slate-500">
-                  กดส่งแล้วถือว่ายินยอมให้เราใช้ข้อมูลเพื่อการติดต่อกลับ
-                </div>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-xs text-slate-500">กดส่งแล้วถือว่ายินยอมให้เราใช้ข้อมูลเพื่อการติดต่อกลับ</div>
 
                 <button
-                  class="inline-flex items-center justify-center gap-2 h-11 px-5 rounded-md bg-red-600 text-white font-bold hover:bg-red-700 active:bg-red-800 disabled:opacity-60 disabled:cursor-not-allowed"
+                  class="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-red-600 px-5 font-bold text-white hover:bg-red-700 active:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
                   :disabled="loading"
                   type="submit"
                 >
@@ -127,16 +121,16 @@
       </div>
 
       <div class="lg:col-span-1">
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-          <div class="p-5 sm:p-6 border-b border-slate-100">
+        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 p-5 sm:p-6">
             <h2 class="text-lg font-bold text-slate-800">ข้อมูลติดต่อ</h2>
             <p class="mt-1 text-sm text-slate-500">บริษัท เอ็มแอนด์บี อินโนเวทีฟ คอมเมิร์ซ จำกัด</p>
-            <p class="mt-1 text-sm text-slate-500">M&B INNOVATIVE COMMERCE Co., Ltd.</p>
+            <p class="mt-1 text-sm text-slate-500">Pharmacy Care Co., Ltd.</p>
           </div>
 
-          <div class="p-5 sm:p-6 space-y-4 text-sm text-slate-700">
+          <div class="space-y-4 p-5 text-sm text-slate-700 sm:p-6">
             <div class="flex items-start gap-3">
-              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-700 border border-red-100">📍</span>
+              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-100 bg-red-50 text-red-700">📍</span>
               <div>
                 <div class="font-semibold">ที่อยู่</div>
                 <div class="text-slate-600">อ.เมือง จ.ร้อยเอ็ด 450000</div>
@@ -144,7 +138,7 @@
             </div>
 
             <div class="flex items-start gap-3">
-              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-700 border border-red-100">☎</span>
+              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-100 bg-red-50 text-red-700">☎</span>
               <div>
                 <div class="font-semibold">โทร</div>
                 <div class="text-slate-600">0917762859</div>
@@ -152,7 +146,7 @@
             </div>
 
             <div class="flex items-start gap-3">
-              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-700 border border-red-100">✉</span>
+              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-100 bg-red-50 text-red-700">✉</span>
               <div>
                 <div class="font-semibold">อีเมล</div>
                 <div class="text-slate-600">automation101training@gmail.com</div>
@@ -160,13 +154,13 @@
             </div>
 
             <div class="pt-2">
-              <div class="text-xs font-semibold text-slate-500 mb-2">เวลาทำการ</div>
+              <div class="mb-2 text-xs font-semibold text-slate-500">เวลาทำการ</div>
               <div class="text-slate-600">จันทร์-ศุกร์ 09:00-18:00</div>
             </div>
 
-            <div class="pt-3 border-t border-slate-100">
+            <div class="border-t border-slate-100 pt-3">
               <button
-                class="w-full inline-flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-slate-200 hover:bg-slate-50 font-semibold text-slate-700"
+                class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-slate-200 px-4 font-semibold text-slate-700 hover:bg-slate-50"
                 type="button"
                 @click="goInvoice"
               >
@@ -177,13 +171,12 @@
           </div>
         </div>
 
-        <div class="mt-6 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-          <div class="p-5 sm:p-6 border-b border-slate-100">
+        <div class="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div class="border-b border-slate-100 p-5 sm:p-6">
             <h2 class="text-lg font-bold text-slate-800">แผนที่</h2>
           </div>
           <div class="p-3">
-            <div class="aspect-[16/9] rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 text-sm">
-            </div>
+            <div class="flex aspect-[16/9] items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-sm text-slate-500"></div>
           </div>
         </div>
       </div>
@@ -192,8 +185,10 @@
 </template>
 
 <script setup lang="ts">
+useHead({ title: 'ติดต่อเรา | ร้านขายยา' })
+
 const route = useRoute()
-useState<string>("mb_search_q", () => "")
+useState<string>('mb_search_q', () => '')
 
 type ContactForm = {
   full_name: string
@@ -210,26 +205,26 @@ type ContactMessageRow = ContactForm & {
   created_at: string
 }
 
-const CONTACT_STORAGE_KEY = "contact_messages"
+const CONTACT_STORAGE_KEY = 'contact_messages'
 const { getValue, setValue } = useSharedStore()
 
 const form = ref<ContactForm>({
-  full_name: "",
-  phone: "",
-  company: "",
-  email: "",
-  subject: "",
-  detail: "",
+  full_name: '',
+  phone: '',
+  company: '',
+  email: '',
+  subject: '',
+  detail: '',
 })
 
 const loading = ref(false)
-const error = ref("")
+const error = ref('')
 const success = ref(false)
 
 const nowIso = () => new Date().toISOString()
 
 const uid = () => {
-  if (typeof globalThis !== "undefined" && (globalThis as any).crypto?.randomUUID) {
+  if (typeof globalThis !== 'undefined' && (globalThis as any).crypto?.randomUUID) {
     return (globalThis as any).crypto.randomUUID() as string
   }
   return `c_${Math.random().toString(16).slice(2)}_${Date.now()}`
@@ -237,36 +232,36 @@ const uid = () => {
 
 const resetForm = () => {
   form.value = {
-    full_name: "",
-    phone: "",
-    company: "",
-    email: "",
-    subject: "",
-    detail: "",
+    full_name: '',
+    phone: '',
+    company: '',
+    email: '',
+    subject: '',
+    detail: '',
   }
-  error.value = ""
+  error.value = ''
   success.value = false
 }
 
 const submit = async () => {
   loading.value = true
-  error.value = ""
+  error.value = ''
   success.value = false
 
   try {
-    const fullName = (form.value.full_name || "").trim()
-    const detail = (form.value.detail || "").trim()
+    const fullName = (form.value.full_name || '').trim()
+    const detail = (form.value.detail || '').trim()
 
-    if (!fullName) throw new Error("กรุณากรอกชื่อ-นามสกุล")
-    if (!detail) throw new Error("กรุณากรอกรายละเอียด")
+    if (!fullName) throw new Error('กรุณากรอกชื่อ-นามสกุล')
+    if (!detail) throw new Error('กรุณากรอกรายละเอียด')
 
     const payload: ContactMessageRow = {
       id: uid(),
       full_name: fullName,
-      phone: (form.value.phone || "").trim(),
-      company: (form.value.company || "").trim(),
-      email: (form.value.email || "").trim(),
-      subject: (form.value.subject || "").trim(),
+      phone: (form.value.phone || '').trim(),
+      company: (form.value.company || '').trim(),
+      email: (form.value.email || '').trim(),
+      subject: (form.value.subject || '').trim(),
       detail,
       source_page: route.fullPath,
       created_at: nowIso(),
@@ -279,14 +274,14 @@ const submit = async () => {
     resetForm()
     success.value = true
   } catch (err: any) {
-    error.value = err?.message || "ส่งข้อมูลไม่สำเร็จ"
+    error.value = err?.message || 'ส่งข้อมูลไม่สำเร็จ'
   } finally {
     loading.value = false
   }
 }
 
 const goInvoice = async () => {
-  await navigateTo("/invoice")
+  await navigateTo('/invoice')
 }
 </script>
 
