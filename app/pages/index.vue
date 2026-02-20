@@ -44,6 +44,10 @@
 
           <div v-if="loading" class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">กำลังโหลดสินค้า...</div>
 
+          <div v-else-if="loadError" class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
+            โหลดสินค้าไม่สำเร็จ กรุณาตรวจสอบการตั้งค่าเซิร์ฟเวอร์ (SUPABASE_URL / SUPABASE_KEY)
+          </div>
+
           <div v-else class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             <NuxtLink
               v-for="item in featuredProducts"
@@ -133,13 +137,7 @@ useHead({ title: "หน้าแรก | ร้านขายยา" })
 const fallbackImg = "/recommend-factory-type-1.jpg"
 const featuredProducts = ref<ProductItem[]>([])
 const loading = ref(true)
-
-const fallbackProducts: ProductItem[] = [
-  { id: "f1", name: "ยาแก้ปวดลดไข้", category: "Pain & Fever", sku: "PARA-500", unit: "แผง", price: 45, image_url: "/recommend-factory-type-1.jpg" },
-  { id: "f2", name: "ยาแก้แพ้", category: "Allergy", sku: "ALL-010", unit: "กล่อง", price: 120, image_url: "/factory-layout.jpg" },
-  { id: "f3", name: "ยาลดกรด", category: "Digestive", sku: "DIG-205", unit: "ขวด", price: 89, image_url: "/rectangle_1015.jpg" },
-  { id: "f4", name: "เวชภัณฑ์ทำแผล", category: "First Aid", sku: "FA-332", unit: "ชุด", price: 199, image_url: "/IMG_3356-1040x693-1.jpg" },
-]
+const loadError = ref(false)
 
 const displayBrand = (item: ProductItem) =>
   (item.brand || "").trim() || (item.category || "").trim() || "-"
@@ -151,11 +149,13 @@ const formatPrice = (value: number | null) => {
 
 const loadFeatured = async () => {
   loading.value = true
+  loadError.value = false
   try {
     const rows = await $fetch<ProductItem[]>("/api/products-primary")
-    featuredProducts.value = Array.isArray(rows) && rows.length ? rows.slice(0, 8) : fallbackProducts
+    featuredProducts.value = Array.isArray(rows) && rows.length ? rows.slice(0, 8) : []
   } catch {
-    featuredProducts.value = fallbackProducts
+    featuredProducts.value = []
+    loadError.value = true
   } finally {
     loading.value = false
   }
