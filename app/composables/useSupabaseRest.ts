@@ -21,6 +21,8 @@ type CreateProductPayload = {
   image_url?: string | null
 }
 
+type UpdateProductPayload = Partial<CreateProductPayload>
+
 type SaleLinePayload = {
   productId?: string | number | null
   name?: string | null
@@ -123,6 +125,34 @@ export const useSupabaseRest = () => {
       headers: { ...headers(), Prefer: "return=minimal" },
     })
     return { ok: true }
+  }
+
+  const updateProduct = async (id: string | number, payload: UpdateProductPayload) => {
+    const h = { ...headers(), Prefer: "return=representation" }
+    const encodedId = encodeURIComponent(String(id))
+
+    try {
+      const updated = await $fetch<any[]>(
+        withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodedId}`),
+        {
+          method: "PATCH",
+          headers: h,
+          body: payload,
+        }
+      )
+      return Array.isArray(updated) ? updated[0] : updated
+    } catch {
+      const { brand: _brand, ...fallbackPayload } = payload
+      const updated = await $fetch<any[]>(
+        withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodedId}`),
+        {
+          method: "PATCH",
+          headers: h,
+          body: fallbackPayload,
+        }
+      )
+      return Array.isArray(updated) ? updated[0] : updated
+    }
   }
 
   const listSalesHistory = async () => {
@@ -231,6 +261,7 @@ export const useSupabaseRest = () => {
   return {
     listProducts,
     createProduct,
+    updateProduct,
     deleteProduct,
     listSalesHistory,
     createSaleHistory,

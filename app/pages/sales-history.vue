@@ -45,6 +45,103 @@
       <p v-if="error" class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
     </section>
 
+    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">ยอดขายตามช่วงวันที่</h2>
+            <p class="text-sm text-slate-500">เลือกช่วงวันที่เพื่อสรุปยอดขายรายวัน</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <input
+              v-model="dateFrom"
+              type="date"
+              class="h-10 rounded-lg border border-slate-300 px-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-200"
+            />
+            <span class="text-slate-400">-</span>
+            <input
+              v-model="dateTo"
+              type="date"
+              class="h-10 rounded-lg border border-slate-300 px-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-200"
+            />
+            <button
+              type="button"
+              class="h-10 rounded-lg border border-slate-300 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              @click="setLast7Days"
+            >
+              7 วันล่าสุด
+            </button>
+            <button
+              type="button"
+              class="h-10 rounded-lg border border-slate-300 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              @click="setThisMonth"
+            >
+              เดือนนี้
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 sm:gap-3">
+          <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-center">
+            <p class="text-[11px] text-emerald-700">รวมทั้งช่วง</p>
+            <p class="text-sm font-extrabold text-emerald-800">{{ money(rangeTotal) }}</p>
+          </div>
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center">
+            <p class="text-[11px] text-slate-500">เฉลี่ย/วัน</p>
+            <p class="text-sm font-extrabold text-slate-800">{{ money(rangeAverage) }}</p>
+          </div>
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center">
+            <p class="text-[11px] text-slate-500">สูงสุด</p>
+            <p class="text-sm font-extrabold text-slate-800">{{ bestDayLabel }} {{ money(bestDayTotal) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <p v-if="!dateRangeValid" class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+        กรุณาเลือกวันที่เริ่มต้นให้น้อยกว่าหรือเท่ากับวันที่สิ้นสุด
+      </p>
+
+      <div class="mt-5 rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 sm:p-5">
+        <div class="grid grid-cols-[44px_1fr] gap-3">
+          <div class="flex h-56 flex-col justify-between pb-6 text-[11px] font-semibold text-slate-400">
+            <span>{{ money(yAxisTicks[0]) }}</span>
+            <span>{{ money(yAxisTicks[1]) }}</span>
+            <span>{{ money(yAxisTicks[2]) }}</span>
+            <span>0</span>
+          </div>
+
+          <div class="relative h-56">
+            <div class="pointer-events-none absolute inset-0 flex flex-col justify-between pb-6">
+              <div class="border-t border-dashed border-slate-200"></div>
+              <div class="border-t border-dashed border-slate-200"></div>
+              <div class="border-t border-dashed border-slate-200"></div>
+              <div class="border-t border-slate-200"></div>
+            </div>
+
+            <div class="relative z-10 grid h-full items-end gap-2 sm:gap-3" :style="{ gridTemplateColumns: `repeat(${Math.max(chartDays.length, 1)}, minmax(0, 1fr))` }">
+              <div v-for="day in chartDays" :key="day.key" class="flex h-full flex-col justify-end">
+                <div class="group relative flex h-[180px] items-end justify-center">
+                  <div
+                    class="w-full max-w-[68px] rounded-t-xl border border-emerald-200/70 bg-gradient-to-t from-emerald-600 to-emerald-400 shadow-sm transition-all duration-300 group-hover:brightness-105"
+                    :class="day.total === bestDayTotal && day.total > 0 ? 'ring-2 ring-amber-300/70' : ''"
+                    :style="{ height: barHeight(day.total) }"
+                  />
+                  <div class="pointer-events-none absolute -top-7 rounded-md bg-slate-900 px-2 py-1 text-[11px] font-semibold text-white opacity-0 shadow transition group-hover:opacity-100">
+                    {{ money(day.total) }} บาท
+                  </div>
+                </div>
+                <p class="mt-2 text-center text-sm font-bold text-slate-700">{{ day.label }}</p>
+                <p class="text-center text-xs text-slate-500">{{ money(day.total) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p v-if="dateRangeValid && !chartDays.length" class="mt-3 text-sm text-slate-500">
+        ไม่มีข้อมูลยอดขายในช่วงวันที่ที่เลือก
+      </p>
+    </section>
+
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="overflow-auto">
         <table class="w-full min-w-[920px] text-sm">
@@ -80,13 +177,6 @@
                     @click="openDetail(sale)"
                   >
                     ดู
-                  </button>
-                  <button
-                    type="button"
-                    class="rounded-md border border-red-300 px-3 py-1.5 font-semibold text-red-700 hover:bg-red-50"
-                    @click="removeSale(sale.id)"
-                  >
-                    ลบ
                   </button>
                 </div>
               </td>
@@ -211,6 +301,129 @@ const filteredSales = computed(() => {
 const grandTotal = computed(() => filteredSales.value.reduce((sum, s) => sum + s.total, 0))
 const grandQty = computed(() => filteredSales.value.reduce((sum, s) => sum + s.totalQty, 0))
 
+const toInputDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+const today = new Date()
+today.setHours(0, 0, 0, 0)
+const sevenDaysAgo = new Date(today)
+sevenDaysAgo.setDate(today.getDate() - 6)
+
+const dateFrom = ref(toInputDate(sevenDaysAgo))
+const dateTo = ref(toInputDate(today))
+
+const rangeStartDate = computed(() => {
+  const date = new Date(`${dateFrom.value}T00:00:00`)
+  return Number.isNaN(date.getTime()) ? null : date
+})
+
+const rangeEndDate = computed(() => {
+  const date = new Date(`${dateTo.value}T23:59:59.999`)
+  return Number.isNaN(date.getTime()) ? null : date
+})
+
+const dateRangeValid = computed(() => {
+  if (!rangeStartDate.value || !rangeEndDate.value) return false
+  return rangeStartDate.value.getTime() <= rangeEndDate.value.getTime()
+})
+
+const chartDays = computed(() => {
+  if (!dateRangeValid.value || !rangeStartDate.value || !rangeEndDate.value) return []
+
+  const start = new Date(rangeStartDate.value)
+  start.setHours(0, 0, 0, 0)
+  const end = new Date(rangeEndDate.value)
+  end.setHours(0, 0, 0, 0)
+
+  const dayBuckets: { key: string; label: string; total: number }[] = []
+  const cursor = new Date(start)
+  let guard = 0
+  while (cursor.getTime() <= end.getTime() && guard < 93) {
+    dayBuckets.push({
+      key: toInputDate(cursor),
+      label: `${cursor.getDate()}/${cursor.getMonth() + 1}`,
+      total: 0,
+    })
+    cursor.setDate(cursor.getDate() + 1)
+    guard += 1
+  }
+
+  const dayIndexMap = new Map(dayBuckets.map((bucket, index) => [bucket.key, index]))
+
+  for (const sale of sales.value) {
+    const saleDate = new Date(sale.createdAt)
+    if (Number.isNaN(saleDate.getTime())) continue
+    if (saleDate.getTime() < rangeStartDate.value.getTime() || saleDate.getTime() > rangeEndDate.value.getTime()) continue
+
+    const key = toInputDate(saleDate)
+    const bucketIndex = dayIndexMap.get(key)
+    if (bucketIndex === undefined) continue
+
+    dayBuckets[bucketIndex].total += Number(sale.total) || 0
+  }
+
+  return dayBuckets
+})
+
+const maxRangeTotal = computed(() => {
+  return Math.max(...chartDays.value.map((day) => day.total), 0)
+})
+
+const rangeTotal = computed(() => chartDays.value.reduce((sum, day) => sum + day.total, 0))
+const rangeAverage = computed(() => (chartDays.value.length ? rangeTotal.value / chartDays.value.length : 0))
+
+const bestDay = computed(() =>
+  chartDays.value.reduce(
+    (best, current) => (current.total > best.total ? current : best),
+    { key: "", label: "-", total: 0 }
+  )
+)
+const bestDayLabel = computed(() => bestDay.value.label)
+const bestDayTotal = computed(() => bestDay.value.total)
+
+const niceCeil = (value: number) => {
+  if (value <= 0) return 100
+  const magnitude = 10 ** Math.floor(Math.log10(value))
+  const normalized = value / magnitude
+  const step = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10
+  return step * magnitude
+}
+
+const chartMax = computed(() => niceCeil(maxRangeTotal.value))
+const yAxisTicks = computed(() => [
+  chartMax.value,
+  Math.round((chartMax.value * 2) / 3),
+  Math.round(chartMax.value / 3),
+])
+
+const barHeight = (total: number) => {
+  if (total <= 0) return "0%"
+  const percent = (total / chartMax.value) * 100
+  return `${Math.max(6, Math.round(percent))}%`
+}
+
+const setLast7Days = () => {
+  const end = new Date()
+  end.setHours(0, 0, 0, 0)
+  const start = new Date(end)
+  start.setDate(end.getDate() - 6)
+  dateFrom.value = toInputDate(start)
+  dateTo.value = toInputDate(end)
+}
+
+const setThisMonth = () => {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), 1)
+  const end = new Date()
+  end.setHours(0, 0, 0, 0)
+  dateFrom.value = toInputDate(start)
+  dateTo.value = toInputDate(end)
+}
+
 const money = (value: number | null | undefined) => `${Number(value || 0).toLocaleString("th-TH")}`
 const formatDate = (value: string) =>
   value ? new Date(value).toLocaleString("th-TH") : "-"
@@ -236,24 +449,6 @@ const loadHistory = async () => {
 const openDetail = (sale: SaleHistoryEntry) => {
   selected.value = sale
   showDetail.value = true
-}
-
-const removeSale = async (id: string) => {
-  error.value = ""
-  try {
-    await supa.deleteSaleHistory(id)
-    sales.value = sales.value.filter((x) => x.id !== id)
-    if (selected.value?.id === id) {
-      selected.value = null
-      showDetail.value = false
-    }
-  } catch (err: any) {
-    error.value =
-      err?.data?.statusMessage ||
-      err?.data?.message ||
-      err?.message ||
-      "ลบรายการไม่สำเร็จ"
-  }
 }
 
 const printSelected = () => {

@@ -11,7 +11,7 @@
           <h2 class="text-base font-extrabold text-slate-900">เพิ่มสินค้าใหม่</h2>
         </div>
 
-        <form class="p-5 space-y-4" @submit.prevent="createProduct">
+        <form class="p-5 space-y-4" @submit.prevent="submitProduct">
           <div>
             <label class="mb-1 block text-sm font-semibold text-slate-800">ชื่อสินค้า *</label>
             <input
@@ -214,7 +214,14 @@
                   <td class="px-3 py-2">{{ p.unit || "-" }}</td>
                   <td class="px-3 py-2 text-right">{{ p.quantity ?? 0 }}</td>
                   <td class="px-3 py-2 text-right">{{ formatPrice(p.price) }}</td>
-                  <td class="px-3 py-2 text-center">
+                  <td class="px-3 py-2 text-center whitespace-nowrap">
+                    <button
+                      type="button"
+                      class="mr-2 rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100"
+                      @click="startEdit(p)"
+                    >
+                      แก้ไข
+                    </button>
                     <button
                       type="button"
                       class="rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100"
@@ -267,6 +274,7 @@ const loading = ref(false)
 const errorMsg = ref("")
 const successMsg = ref("")
 const search = ref("")
+const editingId = ref<string | number | null>(null)
 
 const form = reactive({
   name: "",
@@ -291,6 +299,7 @@ const filteredProducts = computed(() => {
 })
 
 const resetForm = () => {
+  editingId.value = null
   form.name = ""
   form.brand = ""
   form.sku = ""
@@ -299,6 +308,20 @@ const resetForm = () => {
   form.quantity = 0
   form.price = 0
   form.image_url = ""
+}
+
+const startEdit = (item: ProductRow) => {
+  editingId.value = item.id
+  form.name = item.name || ""
+  form.brand = item.brand || ""
+  form.sku = item.sku || ""
+  form.category = item.category || ""
+  form.unit = item.unit || ""
+  form.quantity = Number(item.quantity || 0)
+  form.price = Number(item.price || 0)
+  form.image_url = item.image_url || ""
+  errorMsg.value = ""
+  successMsg.value = ""
 }
 
 const fileToDataUrl = (file: File) =>
@@ -342,7 +365,7 @@ const loadProducts = async () => {
   }
 }
 
-const createProduct = async () => {
+const submitProduct = async () => {
   errorMsg.value = ""
   successMsg.value = ""
 
@@ -372,6 +395,13 @@ const createProduct = async () => {
 
   loading.value = true
   try {
+    if (editingId.value) {
+      await supa.updateProduct(editingId.value, payload)
+      successMsg.value = "แก้ไขข้อมูลสินค้าเรียบร้อย"
+      resetForm()
+      await loadProducts()
+      return
+    }
     await supa.createProduct(payload)
     successMsg.value = "เพิ่มสินค้าสำเร็จ"
     resetForm()
@@ -391,6 +421,7 @@ const deleteProduct = async (id: string | number) => {
   loading.value = true
   try {
     await supa.deleteProduct(id)
+    if (editingId.value === id) resetForm()
     successMsg.value = "ลบสินค้าแล้ว"
     await loadProducts()
   } catch (e: any) {

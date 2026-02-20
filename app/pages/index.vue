@@ -81,20 +81,49 @@
         </div>
       </section>
 
-      <section id="benefits" class="bg-white py-14 sm:py-20">
-        <div class="mx-auto grid w-full max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-3">
-          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
-            <h3 class="text-xl font-extrabold text-emerald-900">ข้อมูลชัดเจน</h3>
-            <p class="mt-2 text-sm leading-relaxed text-slate-700">ดูชื่อยา หมวดหมู่ ราคา และหน่วยขายได้ทันทีในหน้าเดียว</p>
-          </article>
-          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
-            <h3 class="text-xl font-extrabold text-emerald-900">ค้นหาไว</h3>
-            <p class="mt-2 text-sm leading-relaxed text-slate-700">เข้าสู่หน้าสินค้าเพื่อค้นหาตามชื่อ SKU และหมวดหมู่ได้รวดเร็ว</p>
-          </article>
-          <article class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
-            <h3 class="text-xl font-extrabold text-emerald-900">พร้อมให้คำแนะนำ</h3>
-            <p class="mt-2 text-sm leading-relaxed text-slate-700">มีช่องทางติดต่อสอบถามก่อนตัดสินใจเลือกสินค้า</p>
-          </article>
+      <section id="benefits" class="bg-white">
+        <div class="benefits-top relative overflow-hidden border-y border-slate-200/80 py-14 sm:py-20">
+          <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.88)_48%,rgba(247,236,216,0.86)_100%)]"></div>
+          <div class="absolute inset-0 opacity-30">
+            <img src="/recommend-factory-type-1.jpg" alt="background" class="h-full w-full object-cover" />
+          </div>
+
+          <div class="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr]">
+            <div>
+              <h2 class="max-w-3xl text-3xl font-extrabold leading-tight text-emerald-700 sm:text-5xl">
+                สร้างระบบนิเวศของการดูแลสุขภาพที่เชื่อมต่อถึงกัน เพื่อการดูแลที่ไร้รอยต่อ
+              </h2>
+              <div class="mt-4 h-px max-w-3xl bg-slate-300"></div>
+              <p class="mt-4 max-w-3xl text-lg leading-relaxed text-slate-800">
+                HA.OS ระบบ HIS ที่เชื่อมต่อกับหน่วยงานกลาง และพาร์ทเนอร์ด้านสุขภาพต่างๆ เพื่อความสะดวกและความหลากหลายในกระบวนการด้านสุขภาพของโรงพยาบาล
+              </p>
+              <NuxtLink
+                to="/contact"
+                class="mt-6 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-sm font-extrabold text-white transition hover:bg-emerald-700"
+              >
+                ติดต่อเพื่อเป็นพาร์ทเนอร์
+              </NuxtLink>
+            </div>
+
+            <div class="mx-auto">
+              <div class="relative h-[280px] w-[280px] rounded-full border-4 border-white/80 bg-white/60 p-3 shadow-2xl backdrop-blur-sm sm:h-[360px] sm:w-[360px]">
+                <div class="h-full w-full overflow-hidden rounded-full ring-4 ring-white/70">
+                  <img src="/recommend-factory-type-1.jpg" alt="partnership" class="h-full w-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefits-bottom relative overflow-hidden py-14 sm:py-20">
+          <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(181,221,206,0.78)_0%,rgba(196,225,241,0.72)_100%)]"></div>
+          <div class="relative mx-auto w-full max-w-7xl px-4 sm:px-6">
+            <h3 class="text-center text-3xl font-extrabold text-slate-800 sm:text-5xl">การเชื่อมต่อที่ครอบคลุมกระบวนการด้านสุขภาพ</h3>
+            <div class="mx-auto mt-8 max-w-5xl rounded-2xl border border-white/70 bg-white/15 p-6 text-center text-lg leading-relaxed text-slate-800 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-8">
+              เราออกแบบ HA.OS ให้เป็นแพลตฟอร์มแบบเปิดที่พร้อมเชื่อมต่อกับระบบต่าง ๆ ได้อย่างหลากหลายตามมาตรฐานสากล เพื่อให้โรงพยาบาลสามารถเลือกใช้เทคโนโลยีที่ดีที่สุดสำหรับแต่ละส่วนงาน และนำมาทำงานร่วมกันได้อย่างลงตัว
+              ข้อมูลผู้ป่วยจึงถูกส่งต่ออย่างถูกต้อง แม่นยำ และทันท่วงทีในทุกขั้นตอนการรักษา
+            </div>
+          </div>
         </div>
       </section>
     </main>
