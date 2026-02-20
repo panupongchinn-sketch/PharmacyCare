@@ -2,18 +2,26 @@
 import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
+  ssr: false,
   devtools: { enabled: true },
+  css: ["./app/assets/css/main.css"],
   nitro: {
     preset: "static",
   },
-  css: ["./app/assets/css/main.css"],
-  vite: {
-    plugins: [tailwindcss()],
-  },
   runtimeConfig: {
     public: {
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_KEY: process.env.SUPABASE_KEY,
+      supabaseUrl:
+        process.env.NUXT_PUBLIC_SUPABASE_URL ||
+        process.env.SUPABASE_URL ||
+        "",
+      supabaseAnonKey:
+        process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY ||
+        process.env.SUPABASE_ANON_KEY ||
+        process.env.SUPABASE_KEY ||
+        "",
     },
+  },
+  vite: {
+    plugins: [tailwindcss()],
   },
 });

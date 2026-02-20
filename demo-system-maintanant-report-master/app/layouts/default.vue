@@ -1,83 +1,55 @@
-<template>
-  <div class="flex min-h-screen bg-base-200">
-    <aside :class="[
-      'bg-primary text-primary-content shadow-xl flex flex-col transition-all duration-300',
-      isSidebarCollapsed ? 'w-16' : 'w-40'
-    ]">
-      <div class="p-4 flex flex-col items-center justify-center gap-3 border-b border-primary-content/20 bg-white">
-        <img v-if="!isSidebarCollapsed" src="/logo.png" alt="AAA Logo" class="w-20" />
-        <img v-else src="/logo.png" alt="AAA Logo" class="w-10" />
+﻿<template>
+  <div class="min-h-screen bg-slate-50 text-slate-900">
+    <header class="sticky top-0 z-[70] border-b border-emerald-100 bg-white/95 backdrop-blur">
+      <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6">
+        <NuxtLink to="/" class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-full border-2 border-emerald-700 text-emerald-700">
+            <span class="text-lg font-extrabold">Rx</span>
+          </div>
+          <div class="leading-tight">
+            <p class="text-xs font-semibold text-emerald-700 sm:text-sm">Pharmacy Care</p>
+            <p class="text-sm font-extrabold text-emerald-900 sm:text-2xl">ร้านขายยาเพื่อสุขภาพครอบครัว</p>
+          </div>
+        </NuxtLink>
+
+        <nav class="hidden items-center gap-7 text-sm font-semibold text-slate-700 lg:flex">
+          <NuxtLink :to="'/'" class="transition hover:text-emerald-700" :class="isActive('/') ? 'text-emerald-700' : ''">หน้าแรก</NuxtLink>
+          <NuxtLink :to="'/#featured'" class="transition hover:text-emerald-700">สินค้าแนะนำ</NuxtLink>
+          <NuxtLink to="/admin/products" class="transition hover:text-emerald-700" :class="isActive('/admin/products') ? 'text-emerald-700' : ''">สต็อกร้าน</NuxtLink>
+          <NuxtLink to="/sale" class="transition hover:text-emerald-700" :class="isActive('/sale') ? 'text-emerald-700' : ''">ขายยา</NuxtLink>
+          <NuxtLink to="/sales-history" class="transition hover:text-emerald-700" :class="isActive('/sales-history') ? 'text-emerald-700' : ''">ประวัติขาย</NuxtLink>
+          <NuxtLink :to="'/#benefits'" class="transition hover:text-emerald-700">ทำไมต้องเรา</NuxtLink>
+          <NuxtLink to="/contact" class="transition hover:text-emerald-700" :class="isActive('/contact') ? 'text-emerald-700' : ''">ติดต่อเรา</NuxtLink>
+        </nav>
+
+        <NuxtLink
+          to="/product"
+          class="inline-flex items-center rounded-full bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800"
+        >
+          ดูรายการยา
+        </NuxtLink>
       </div>
+    </header>
 
-      <nav class="flex-1 p-2 space-y-1">
-        <NuxtLink to="/" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary-focus transition"
-          active-class="bg-primary-focus font-semibold">
-          <Icon icon="mdi:view-dashboard" class="w-5 h-5 shrink-0" />
-          <span v-if="!isSidebarCollapsed" class="text-sm">Overview</span>
-        </NuxtLink>
-
-        <NuxtLink to="/machines" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary-focus transition"
-          active-class="bg-primary-focus font-semibold">
-          <Icon icon="mdi:factory" class="w-5 h-5 shrink-0" />
-          <span v-if="!isSidebarCollapsed" class="text-sm">Machines</span>
-        </NuxtLink>
-
-        <NuxtLink to="/alarms" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary-focus transition"
-          active-class="bg-primary-focus font-semibold">
-          <Icon icon="mdi:bell-alert" class="w-5 h-5 shrink-0" />
-          <span v-if="!isSidebarCollapsed" class="text-sm">Alarm log</span>
-        </NuxtLink>
-
-        <NuxtLink to="/reports" class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-primary-focus transition"
-          active-class="bg-primary-focus font-semibold">
-          <Icon icon="mdi:chart-line" class="w-5 h-5 shrink-0" />
-          <span v-if="!isSidebarCollapsed" class="text-sm">Reports</span>
-        </NuxtLink>
-      </nav>
-      <button
-        class="w-full flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg hover:bg-primary-focus transition text-xs"
-        :title="theme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด'" @click="toggleTheme">
-        <Icon :icon="theme === 'dark' ? 'mdi:weather-sunny' : 'mdi:weather-night'" class="w-4 h-4" />
-        <span v-if="!isSidebarCollapsed">{{ theme === 'dark' ? 'Light' : 'Dark' }}</span>
-      </button>
-      <div class="p-2 border-t border-primary-content/20">
-        <button
-          class="w-full flex items-center justify-center gap-1 px-3 py-2 rounded-lg hover:bg-primary-focus transition text-xs"
-          :title="isSidebarCollapsed ? 'ขยาย Sidebar' : 'ซ่อน Sidebar'" @click="toggleSidebar">
-          <Icon :icon="isSidebarCollapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'" class="w-4 h-4" />
-          <span v-if="!isSidebarCollapsed">Sidebar</span>
-        </button>
-      </div>
-    </aside>
-
-    <main class="flex-1 overflow-auto">
+    <main class="mx-auto w-full max-w-none flex-1 bg-slate-50" :class="isHome ? 'px-0 py-0' : 'px-4 py-8 sm:px-6 lg:px-10'">
       <slot />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue';
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
-const isSidebarCollapsed = useState('sidebarCollapsed', () => false);
-const theme = useState<'dark' | 'light'>('theme', () => 'dark');
-
-const toggleSidebar = () => {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value;
-};
-
-const applyTheme = () => {
-  if (process.client) {
-    document.documentElement.setAttribute('data-theme', theme.value);
-  }
-};
-
-const toggleTheme = () => {
-  theme.value = theme.value === 'dark' ? 'light' : 'dark';
-  applyTheme();
-};
-
-onMounted(() => {
-  applyTheme();
-});
+const route = useRoute()
+const isHome = computed(() => route.path === '/')
+const isActive = (path: string) => route.path === path
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+* {
+  font-family: 'Kanit', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+</style>
