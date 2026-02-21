@@ -7,6 +7,7 @@ type ProductRow = {
   image_url: string | null
   unit: string | null
   quantity: number | null
+  purchase_price?: number | null
   price: number | null
 }
 
@@ -17,11 +18,17 @@ type CreateProductPayload = {
   category: string
   unit: string
   quantity: number
+  purchase_price?: number | null
   price: number
   image_url?: string | null
 }
 
 type UpdateProductPayload = Partial<CreateProductPayload>
+type DecrementStockPayload = {
+  id?: string | number | null
+  sku?: string | null
+  qty: number
+}
 
 type SaleLinePayload = {
   productId?: string | number | null
@@ -74,19 +81,33 @@ export const useSupabaseRest = () => {
 
   const listProducts = async (): Promise<ProductRow[]> => {
     try {
-      const withBrand = await $fetch<ProductRow[]>(
-        withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,brand,category,image_url,unit,quantity,price&order=id.desc`),
-        { headers: headers() }
+      const withBrandAndPurchasePrice = await $fetch<ProductRow[]>(
+        withApiKey(
+          `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,brand,category,image_url,unit,quantity,purchase_price,price&order=id.desc`
+        ),
+        { headers: { ...headers(), "Cache-Control": "no-cache" }, cache: "no-store" }
       )
-      return Array.isArray(withBrand) ? withBrand : []
+      return Array.isArray(withBrandAndPurchasePrice) ? withBrandAndPurchasePrice : []
     } catch {
-      const withoutBrand = await $fetch<any[]>(
-        withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,price&order=id.desc`),
-        { headers: headers() }
-      )
-      return Array.isArray(withoutBrand)
-        ? withoutBrand.map((x) => ({ ...x, brand: null }))
-        : []
+      try {
+        const withoutBrandWithPurchase = await $fetch<any[]>(
+          withApiKey(
+            `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,purchase_price,price&order=id.desc`
+          ),
+          { headers: { ...headers(), "Cache-Control": "no-cache" }, cache: "no-store" }
+        )
+        return Array.isArray(withoutBrandWithPurchase)
+          ? withoutBrandWithPurchase.map((x) => ({ ...x, brand: null }))
+          : []
+      } catch {
+        const withoutBrand = await $fetch<any[]>(
+          withApiKey(`${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,price&order=id.desc`),
+          { headers: { ...headers(), "Cache-Control": "no-cache" }, cache: "no-store" }
+        )
+        return Array.isArray(withoutBrand)
+          ? withoutBrand.map((x) => ({ ...x, brand: null, purchase_price: null }))
+          : []
+      }
     }
   }
 
@@ -101,22 +122,36 @@ export const useSupabaseRest = () => {
       throw new Error("SKU นี้มีอยู่แล้ว กรุณาใช้ SKU ใหม่")
     }
 
-    try {
-      const inserted = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/products_primary`), {
-        method: "POST",
-        headers: h,
-        body: [payload],
-      })
-      return Array.isArray(inserted) ? inserted[0] : inserted
-    } catch {
-      const { brand: _brand, ...fallbackPayload } = payload
-      const inserted = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/products_primary`), {
-        method: "POST",
-        headers: h,
-        body: [fallbackPayload],
-      })
-      return Array.isArray(inserted) ? inserted[0] : inserted
+    const bodies: any[] = [
+      payload,
+      ((x) => {
+        const { brand: _brand, ...rest } = x
+        return rest
+      })(payload),
+      ((x) => {
+        const { purchase_price: _purchasePrice, ...rest } = x
+        return rest
+      })(payload),
+      ((x) => {
+        const { brand: _brand, purchase_price: _purchasePrice, ...rest } = x
+        return rest
+      })(payload),
+    ]
+
+    let lastErr: any = null
+    for (const body of bodies) {
+      try {
+        const inserted = await $fetch<any[]>(withApiKey(`${supabaseUrl}/rest/v1/products_primary`), {
+          method: "POST",
+          headers: h,
+          body: [body],
+        })
+        return Array.isArray(inserted) ? inserted[0] : inserted
+      } catch (err: any) {
+        lastErr = err
+      }
     }
+    throw lastErr || new Error("Create product failed")
   }
 
   const deleteProduct = async (id: string | number) => {
@@ -130,28 +165,146 @@ export const useSupabaseRest = () => {
   const updateProduct = async (id: string | number, payload: UpdateProductPayload) => {
     const h = { ...headers(), Prefer: "return=representation" }
     const encodedId = encodeURIComponent(String(id))
+    const getProductById = async () => {
+      try {
+        const rows = await $fetch<any[]>(
+          withApiKey(
+            `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,brand,category,image_url,unit,quantity,purchase_price,price&id=eq.${encodedId}&limit=1`
+          ),
+          { headers: headers() }
+        )
+        if (Array.isArray(rows) && rows[0]) return rows[0]
+      } catch {
+        try {
+          const rows = await $fetch<any[]>(
+            withApiKey(
+              `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,purchase_price,price&id=eq.${encodedId}&limit=1`
+            ),
+            { headers: headers() }
+          )
+          if (Array.isArray(rows) && rows[0]) return { ...rows[0], brand: null }
+        } catch {
+          const rows = await $fetch<any[]>(
+            withApiKey(
+              `${supabaseUrl}/rest/v1/products_primary?select=id,sku,name,category,image_url,unit,quantity,price&id=eq.${encodedId}&limit=1`
+            ),
+            { headers: headers() }
+          )
+          if (Array.isArray(rows) && rows[0]) return { ...rows[0], brand: null, purchase_price: null }
+        }
+      }
+      return null
+    }
 
-    try {
-      const updated = await $fetch<any[]>(
-        withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodedId}`),
-        {
-          method: "PATCH",
-          headers: h,
-          body: payload,
-        }
+    const valueEquals = (key: string, a: any, b: any) => {
+      if (a == null && b == null) return true
+      if (key === "quantity" || key === "price" || key === "purchase_price") {
+        return Number(a ?? 0) === Number(b ?? 0)
+      }
+      return String(a ?? "") === String(b ?? "")
+    }
+
+    const rowMatchesPayload = (row: any, expected: UpdateProductPayload) => {
+      const entries = Object.entries(expected).filter(([, v]) => v !== undefined)
+      for (const [key, value] of entries) {
+        if (!valueEquals(key, row?.[key], value)) return false
+      }
+      return true
+    }
+
+    const ensureUpdatedRow = async (updated: any, expected: UpdateProductPayload) => {
+      const row = Array.isArray(updated) ? updated[0] : updated
+      if (row && row.id != null && rowMatchesPayload(row, expected)) return row
+      const latest = await getProductById()
+      if (latest && latest.id != null && rowMatchesPayload(latest, expected)) return latest
+      throw new Error("Update product failed: values not changed")
+    }
+
+    const bodies: any[] = [
+      payload,
+      ((x) => {
+        const { brand: _brand, ...rest } = x
+        return rest
+      })(payload),
+      ((x) => {
+        const { purchase_price: _purchasePrice, ...rest } = x
+        return rest
+      })(payload),
+      ((x) => {
+        const { brand: _brand, purchase_price: _purchasePrice, ...rest } = x
+        return rest
+      })(payload),
+    ]
+
+    let lastErr: any = null
+    for (const body of bodies) {
+      try {
+        const updated = await $fetch<any[]>(
+          withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodedId}`),
+          {
+            method: "PATCH",
+            headers: h,
+            body,
+          }
+        )
+        return await ensureUpdatedRow(updated, body)
+      } catch (err: any) {
+        lastErr = err
+      }
+    }
+    throw lastErr || new Error("Update product failed")
+  }
+
+  const decrementProductStock = async (payload: DecrementStockPayload) => {
+    const qty = Number(payload.qty || 0)
+    if (!Number.isFinite(qty) || qty <= 0) {
+      throw new Error("Invalid stock decrement qty")
+    }
+
+    const h = headers()
+    let product: any = null
+
+    if (payload.id != null && String(payload.id).trim()) {
+      const byId = await $fetch<any[]>(
+        withApiKey(
+          `${supabaseUrl}/rest/v1/products_primary?select=id,sku,quantity&id=eq.${encodeURIComponent(
+            String(payload.id)
+          )}&limit=1`
+        ),
+        { headers: h }
       )
-      return Array.isArray(updated) ? updated[0] : updated
-    } catch {
-      const { brand: _brand, ...fallbackPayload } = payload
-      const updated = await $fetch<any[]>(
-        withApiKey(`${supabaseUrl}/rest/v1/products_primary?id=eq.${encodedId}`),
-        {
-          method: "PATCH",
-          headers: h,
-          body: fallbackPayload,
-        }
+      if (Array.isArray(byId) && byId[0]) product = byId[0]
+    }
+
+    if (!product && payload.sku && String(payload.sku).trim()) {
+      const bySku = await $fetch<any[]>(
+        withApiKey(
+          `${supabaseUrl}/rest/v1/products_primary?select=id,sku,quantity&sku=eq.${encodeURIComponent(
+            String(payload.sku).trim()
+          )}&limit=1`
+        ),
+        { headers: h }
       )
-      return Array.isArray(updated) ? updated[0] : updated
+      if (Array.isArray(bySku) && bySku[0]) product = bySku[0]
+    }
+
+    if (!product || product.id == null) {
+      throw new Error("ไม่พบสินค้าเพื่อตัดสต็อก")
+    }
+
+    const beforeQty = Number(product.quantity || 0)
+    if (beforeQty < qty) {
+      throw new Error("สินค้าไม่พอในสต็อก")
+    }
+
+    const afterQty = Math.max(0, beforeQty - qty)
+    const updated = await updateProduct(product.id, { quantity: afterQty })
+
+    return {
+      id: product.id,
+      sku: product.sku ?? null,
+      beforeQty,
+      afterQty: Number(updated?.quantity ?? afterQty),
     }
   }
 
@@ -262,6 +415,7 @@ export const useSupabaseRest = () => {
     listProducts,
     createProduct,
     updateProduct,
+    decrementProductStock,
     deleteProduct,
     listSalesHistory,
     createSaleHistory,

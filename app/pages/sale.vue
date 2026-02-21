@@ -9,10 +9,12 @@
               type="text"
               placeholder="ค้นหาสินค้า / SKU / แบรนด์"
               class="h-11 flex-1 rounded-xl border border-slate-200 px-4 text-sm outline-none focus:ring-2 focus:ring-emerald-200"
+              @keydown.enter.prevent="scanOrAddBySearch"
             />
             <button
               type="button"
               class="h-11 rounded-xl border border-violet-300 bg-violet-50 px-4 text-sm font-semibold text-violet-700 hover:bg-violet-100"
+              @click="scanOrAddBySearch"
             >
               Scan
             </button>
@@ -72,6 +74,11 @@
                   </div>
                 </td>
                 <td class="px-2 py-3 text-right font-semibold">{{ money(lineSubtotalByProductId(p.id)) }}</td>
+              </tr>
+              <tr v-if="!filteredCatalog.length">
+                <td colspan="7" class="px-2 py-6 text-center text-sm text-slate-500">
+                  {{ search.trim() ? 'ไม่พบสินค้าที่ตรงกับคำค้นหา' : 'ยังไม่มีรายการที่เลือก (เลือกจากการ์ดล่างหรือค้นหาแล้วกด +)' }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -160,16 +167,73 @@
           {{ error }}
         </div>
 
-        <button
-          type="button"
-          class="mt-4 h-12 w-full rounded-xl bg-emerald-700 text-lg font-bold text-white hover:bg-emerald-800 disabled:opacity-50"
-          :disabled="!cart.length"
-          @click="pay"
-        >
-          Pay
-        </button>
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            class="h-12 w-full rounded-xl border border-slate-300 bg-white text-base font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            :disabled="!cart.length && !cashInput"
+            @click="clearSale"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            class="h-12 w-full rounded-xl bg-emerald-700 text-lg font-bold text-white hover:bg-emerald-800 disabled:opacity-50"
+            :disabled="!cart.length"
+            @click="pay"
+          >
+            Pay
+          </button>
+        </div>
       </section>
     </div>
+
+    <section class="mx-auto mt-4 w-full max-w-[1700px]">
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 flex items-center justify-between">
+          <h3 class="text-base font-extrabold text-slate-900">สินค้าตัวอื่นๆ</h3>
+          <span class="text-xs text-slate-500">แสดง {{ otherProducts.length }} รายการ</span>
+        </div>
+
+        <div v-if="!otherProducts.length" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+          ไม่มีสินค้าตัวอื่นให้แสดง
+        </div>
+
+        <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <article
+            v-for="p in otherProducts"
+            :key="`other-${p.id}`"
+            class="rounded-xl border border-slate-200 p-3 transition hover:border-emerald-300 hover:bg-emerald-50/40"
+          >
+            <div class="mb-3 flex items-start gap-3">
+              <div class="h-14 w-14 flex-none overflow-hidden rounded border border-slate-200 bg-slate-50">
+                <img v-if="p.image_url" :src="p.image_url" :alt="p.name || 'product'" class="h-full w-full object-cover" />
+                <div v-else class="flex h-full w-full items-center justify-center text-[10px] text-slate-400">No Img</div>
+              </div>
+              <div class="min-w-0">
+                <div class="truncate font-semibold text-slate-900">{{ p.name || '-' }}</div>
+                <div class="truncate text-xs text-slate-500">SKU: {{ p.sku || '-' }}</div>
+                <div class="text-xs text-slate-500">{{ p.brand || p.category || '-' }}</div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-bold text-emerald-700">{{ money(p.price) }}</div>
+                <div class="text-xs text-slate-500">คงเหลือ {{ stockQty(p.id) }}</div>
+              </div>
+              <button
+                type="button"
+                class="h-9 rounded-lg border border-emerald-700 bg-emerald-700 px-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
+                :disabled="stockQty(p.id) <= 0"
+                @click="addToCart(p)"
+              >
+                + เพิ่ม
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <div
       v-if="showReceipt && receipt"
@@ -178,7 +242,12 @@
       <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
         <div id="receipt-print" class="receipt-paper p-5">
           <div class="text-center">
-            <h3 class="text-xl font-extrabold text-slate-900">Pharmacy Care</h3>
+            <div class="mb-2 flex items-center justify-center gap-2">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-emerald-700 text-sm font-extrabold text-emerald-700">
+                Rx
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900">Pharmacy Care</h3>
+            </div>
             <p class="text-sm text-slate-600">ใบเสร็จรับเงิน</p>
           </div>
 
@@ -318,13 +387,22 @@ const categories = computed(() => {
 })
 
 const filteredCatalog = computed(() => {
+  return products.value.filter((p) => cartQty(p.id) > 0)
+})
+
+const otherProducts = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return products.value.filter((p) => {
-    const byCategory = selectedCategory.value === 'All' || p.category === selectedCategory.value
-    const text = [p.name, p.sku, p.brand, p.category].join(' ').toLowerCase()
-    const bySearch = !q || text.includes(q)
-    return byCategory && bySearch
-  })
+  const selectedIds = new Set(filteredCatalog.value.map((p) => String(p.id)))
+  return products.value
+    .filter((p) => {
+      const byCategory = selectedCategory.value === 'All' || p.category === selectedCategory.value
+      if (!byCategory) return false
+      if (selectedIds.has(String(p.id))) return false
+      if (!q) return true
+      const text = [p.name, p.sku, p.brand, p.category].join(' ').toLowerCase()
+      return text.includes(q)
+    })
+    .slice(0, 8)
 })
 
 const cartTotal = computed(() => cart.value.reduce((sum, x) => sum + x.price * x.qty, 0))
@@ -395,6 +473,53 @@ const pressKey = (k: string) => {
   cashInput.value = `${cashInput.value}${k}`
 }
 
+const scanOrAddBySearch = () => {
+  const code = search.value.trim()
+  if (!code) return
+
+  error.value = ''
+  message.value = ''
+  const key = code.toLowerCase()
+
+  const exact = products.value.find(
+    (p) =>
+      String(p.sku || '').trim().toLowerCase() === key ||
+      String(p.id || '').trim() === code
+  )
+  if (exact) {
+    addToCart(exact)
+    if (!error.value) {
+      message.value = `เพิ่มสินค้า ${exact.name || '-'} แล้ว`
+      search.value = ''
+    }
+    return
+  }
+
+  const partial = products.value.filter((p) =>
+    [p.sku, p.name, p.brand, p.category].join(' ').toLowerCase().includes(key)
+  )
+  if (partial.length === 1) {
+    addToCart(partial[0])
+    if (!error.value) {
+      message.value = `เพิ่มสินค้า ${partial[0].name || '-'} แล้ว`
+      search.value = ''
+    }
+    return
+  }
+
+  error.value = partial.length > 1 ? 'พบหลายสินค้า กรุณาระบุ SKU ให้ชัดเจน' : 'ไม่พบบาร์โค้ด/สินค้า'
+}
+
+const clearSale = () => {
+  cart.value = []
+  cashInput.value = ''
+  search.value = ''
+  selectedCategory.value = 'All'
+  paymentMethod.value = 'cash'
+  error.value = ''
+  message.value = ''
+}
+
 const pay = async () => {
   error.value = ''
   message.value = ''
@@ -407,6 +532,16 @@ const pay = async () => {
   if (paymentMethod.value === 'cash' && cashAmount.value < cartTotal.value) {
     error.value = 'เงินสดไม่พอชำระ'
     return
+  }
+
+  await loadProducts()
+  for (const line of cart.value) {
+    const product = products.value.find((p) => String(p.id) === String(line.id))
+    const available = Number(product?.quantity || 0)
+    if (available < line.qty) {
+      error.value = `สินค้า ${line.name || '-'} คงเหลือไม่พอ`
+      return
+    }
   }
 
   const finalTotal = cartTotal.value
@@ -437,7 +572,6 @@ const pay = async () => {
     cash: paid,
     change,
   }
-
   try {
     await supa.createSaleHistory({
       receiptNo,
@@ -450,14 +584,21 @@ const pay = async () => {
       lines,
     })
   } catch (err: any) {
+    await loadProducts()
     error.value =
       err?.data?.statusMessage ||
       err?.data?.message ||
       err?.message ||
-      "บันทึกประวัติการขายไม่สำเร็จ"
+      "บันทึกการขายไม่สำเร็จ"
     return
   }
 
+  await loadProducts()
+  try {
+    localStorage.setItem('pc_stock_updated_at', String(Date.now()))
+  } catch {
+    // ignore localStorage errors
+  }
   showReceipt.value = true
   message.value = 'ชำระเงินสำเร็จ'
   cart.value = []
@@ -470,8 +611,31 @@ const printReceipt = () => {
 
 const loadProducts = async () => {
   try {
-    const rows = await supa.listProducts()
-    products.value = Array.isArray(rows) ? rows : []
+    const [rows, sales] = await Promise.all([supa.listProducts(), supa.listSalesHistory()])
+    const soldById = new Map<string, number>()
+    const soldBySku = new Map<string, number>()
+
+    for (const s of Array.isArray(sales) ? sales : []) {
+      const lines = Array.isArray(s?.lines) ? s.lines : []
+      for (const line of lines) {
+        const qty = Number(line?.qty || 0)
+        if (!Number.isFinite(qty) || qty <= 0) continue
+
+        const pid = line?.productId == null ? "" : String(line.productId)
+        if (pid) soldById.set(pid, (soldById.get(pid) || 0) + qty)
+
+        const sku = String(line?.sku || "").trim().toLowerCase()
+        if (sku) soldBySku.set(sku, (soldBySku.get(sku) || 0) + qty)
+      }
+    }
+
+    products.value = (Array.isArray(rows) ? rows : []).map((p) => {
+      const baseQty = Number(p.quantity || 0)
+      const byId = soldById.get(String(p.id))
+      const bySku = soldBySku.get(String(p.sku || "").trim().toLowerCase())
+      const soldQty = Number((byId ?? bySku) || 0)
+      return { ...p, quantity: Math.max(0, baseQty - soldQty) }
+    })
   } catch {
     products.value = []
     error.value = 'โหลดข้อมูลสินค้าไม่สำเร็จ'

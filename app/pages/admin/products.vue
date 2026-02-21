@@ -1,12 +1,12 @@
 <template>
-  <div class="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 space-y-6">
+  <div class="mx-auto max-w-[1700px] px-4 py-8 sm:px-6 space-y-6">
     <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">จัดการสินค้า (Admin)</h1>
       <p class="mt-1 text-sm text-slate-600">เพิ่ม/ลบสินค้า และจัดการข้อมูลสต็อกใน Supabase</p>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-12">
-      <section class="lg:col-span-4 rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section class="lg:col-span-3 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-100 p-5">
           <h2 class="text-base font-extrabold text-slate-900">เพิ่มสินค้าใหม่</h2>
         </div>
@@ -80,9 +80,9 @@
               />
             </div>
             <div>
-              <label class="mb-1 block text-sm font-semibold text-slate-800">ราคา *</label>
+              <label class="mb-1 block text-sm font-semibold text-slate-800">ราคาซื้อ *</label>
               <input
-                v-model.number="form.price"
+                v-model.number="form.purchase_price"
                 type="number"
                 min="0"
                 step="0.01"
@@ -90,6 +90,18 @@
                 class="h-11 w-full rounded-xl border border-slate-200 px-4 text-sm outline-none focus:ring-2 focus:ring-emerald-200"
               />
             </div>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-sm font-semibold text-slate-800">ราคาขาย *</label>
+            <input
+              v-model.number="form.selling_price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              class="h-11 w-full rounded-xl border border-slate-200 px-4 text-sm outline-none focus:ring-2 focus:ring-emerald-200"
+            />
           </div>
 
           <div>
@@ -142,7 +154,7 @@
         </form>
       </section>
 
-      <section class="lg:col-span-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section class="lg:col-span-9 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-100 p-5 space-y-3">
           <div class="flex items-center justify-between gap-3">
             <div>
@@ -173,7 +185,7 @@
           </div>
 
           <div v-else class="rounded-xl border border-slate-200 overflow-auto">
-            <table class="w-full table-auto text-sm">
+            <table class="min-w-[1080px] w-full table-auto text-sm">
               <thead class="bg-slate-50 text-slate-700">
                 <tr>
                   <th class="px-3 py-2 text-left font-semibold">#</th>
@@ -184,7 +196,8 @@
                   <th class="px-3 py-2 text-left font-semibold">หมวดหมู่</th>
                   <th class="px-3 py-2 text-left font-semibold">หน่วย</th>
                   <th class="px-3 py-2 text-right font-semibold">จำนวน</th>
-                  <th class="px-3 py-2 text-right font-semibold">ราคา</th>
+                  <th class="px-3 py-2 text-right font-semibold">ราคาซื้อ</th>
+                  <th class="px-3 py-2 text-right font-semibold">ราคาขาย</th>
                   <th class="px-3 py-2 text-center font-semibold">จัดการ</th>
                 </tr>
               </thead>
@@ -213,6 +226,7 @@
                   <td class="px-3 py-2">{{ p.category || "-" }}</td>
                   <td class="px-3 py-2">{{ p.unit || "-" }}</td>
                   <td class="px-3 py-2 text-right">{{ p.quantity ?? 0 }}</td>
+                  <td class="px-3 py-2 text-right">{{ formatPrice(p.purchase_price ?? null) }}</td>
                   <td class="px-3 py-2 text-right">{{ formatPrice(p.price) }}</td>
                   <td class="px-3 py-2 text-center whitespace-nowrap">
                     <button
@@ -241,7 +255,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue"
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue"
 
 useHead({ title: "Admin | Products" })
 const supa = useSupabaseRest()
@@ -255,6 +269,7 @@ type ProductRow = {
   image_url: string | null
   unit: string | null
   quantity: number | null
+  purchase_price?: number | null
   price: number | null
 }
 
@@ -265,6 +280,7 @@ type CreatePayload = {
   category: string
   unit: string
   quantity: number
+  purchase_price?: number | null
   price: number
   image_url: string | null
 }
@@ -283,7 +299,8 @@ const form = reactive({
   category: "",
   unit: "",
   quantity: 0,
-  price: 0,
+  purchase_price: 0,
+  selling_price: 0,
   image_url: "",
 })
 
@@ -306,7 +323,8 @@ const resetForm = () => {
   form.category = ""
   form.unit = ""
   form.quantity = 0
-  form.price = 0
+  form.purchase_price = 0
+  form.selling_price = 0
   form.image_url = ""
 }
 
@@ -318,7 +336,8 @@ const startEdit = (item: ProductRow) => {
   form.category = item.category || ""
   form.unit = item.unit || ""
   form.quantity = Number(item.quantity || 0)
-  form.price = Number(item.price || 0)
+  form.purchase_price = Number(item.purchase_price || 0)
+  form.selling_price = Number(item.price || 0)
   form.image_url = item.image_url || ""
   errorMsg.value = ""
   successMsg.value = ""
@@ -355,8 +374,31 @@ const loadProducts = async () => {
   loading.value = true
   errorMsg.value = ""
   try {
-    const rows = await supa.listProducts()
-    products.value = Array.isArray(rows) ? rows : []
+    const [rows, sales] = await Promise.all([supa.listProducts(), supa.listSalesHistory()])
+    const soldById = new Map<string, number>()
+    const soldBySku = new Map<string, number>()
+
+    for (const s of Array.isArray(sales) ? sales : []) {
+      const lines = Array.isArray(s?.lines) ? s.lines : []
+      for (const line of lines) {
+        const qty = Number(line?.qty || 0)
+        if (!Number.isFinite(qty) || qty <= 0) continue
+
+        const pid = line?.productId == null ? "" : String(line.productId)
+        if (pid) soldById.set(pid, (soldById.get(pid) || 0) + qty)
+
+        const sku = String(line?.sku || "").trim().toLowerCase()
+        if (sku) soldBySku.set(sku, (soldBySku.get(sku) || 0) + qty)
+      }
+    }
+
+    products.value = (Array.isArray(rows) ? rows : []).map((p) => {
+      const baseQty = Number(p.quantity || 0)
+      const byId = soldById.get(String(p.id))
+      const bySku = soldBySku.get(String(p.sku || "").trim().toLowerCase())
+      const soldQty = Number((byId ?? bySku) || 0)
+      return { ...p, quantity: Math.max(0, baseQty - soldQty) }
+    })
   } catch (e: any) {
     errorMsg.value = e?.data?.statusMessage || e?.message || "โหลดสินค้าไม่สำเร็จ"
     products.value = []
@@ -376,7 +418,8 @@ const submitProduct = async () => {
     category: form.category.trim(),
     unit: form.unit.trim(),
     quantity: Number(form.quantity),
-    price: Number(form.price),
+    purchase_price: Number(form.purchase_price),
+    price: Number(form.selling_price),
     image_url: form.image_url || null,
   }
 
@@ -388,8 +431,12 @@ const submitProduct = async () => {
     errorMsg.value = "จำนวนต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป"
     return
   }
+  if (!Number.isFinite(Number(payload.purchase_price)) || Number(payload.purchase_price) < 0) {
+    errorMsg.value = "ราคาซื้อต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป"
+    return
+  }
   if (!Number.isFinite(payload.price) || payload.price < 0) {
-    errorMsg.value = "ราคาต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป"
+    errorMsg.value = "ราคาขายต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป"
     return
   }
 
@@ -431,5 +478,28 @@ const deleteProduct = async (id: string | number) => {
   }
 }
 
-onMounted(loadProducts)
+let syncTimer: ReturnType<typeof setInterval> | null = null
+const syncOnFocus = () => {
+  if (document.visibilityState === "visible") loadProducts()
+}
+const onStockStorage = (e: StorageEvent) => {
+  if (e.key === "pc_stock_updated_at") loadProducts()
+}
+
+onMounted(() => {
+  loadProducts()
+  window.addEventListener("focus", syncOnFocus)
+  document.addEventListener("visibilitychange", syncOnFocus)
+  window.addEventListener("storage", onStockStorage)
+  syncTimer = setInterval(() => {
+    if (document.visibilityState === "visible") loadProducts()
+  }, 15000)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("focus", syncOnFocus)
+  document.removeEventListener("visibilitychange", syncOnFocus)
+  window.removeEventListener("storage", onStockStorage)
+  if (syncTimer) clearInterval(syncTimer)
+})
 </script>

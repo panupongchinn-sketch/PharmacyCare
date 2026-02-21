@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="mt-4 grid gap-3 sm:grid-cols-3">
+      <div class="mt-4 grid gap-3 sm:grid-cols-5">
         <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
           <p class="text-xs text-slate-500">บิลทั้งหมด</p>
           <p class="text-2xl font-extrabold text-slate-900">{{ filteredSales.length }}</p>
@@ -29,6 +29,14 @@
         <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
           <p class="text-xs text-slate-500">จำนวนสินค้ารวม</p>
           <p class="text-2xl font-extrabold text-slate-900">{{ grandQty }}</p>
+        </div>
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+          <p class="text-xs text-amber-700">ต้นทุนรวม</p>
+          <p class="text-2xl font-extrabold text-amber-900">{{ money(grandCost) }}</p>
+        </div>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+          <p class="text-xs text-emerald-700">กำไรรวม</p>
+          <p class="text-2xl font-extrabold text-emerald-900">{{ money(grandProfit) }}</p>
         </div>
       </div>
 
@@ -282,7 +290,15 @@ type SaleHistoryEntry = {
   change: number
 }
 
+type ProductCostRow = {
+  id: string | number
+  sku: string | null
+  purchase_price?: number | null
+}
+
 const sales = ref<SaleHistoryEntry[]>([])
+const productCostById = ref<Map<string, number>>(new Map())
+const productCostBySku = ref<Map<string, number>>(new Map())
 const search = ref("")
 const showDetail = ref(false)
 const selected = ref<SaleHistoryEntry | null>(null)
@@ -300,6 +316,16 @@ const filteredSales = computed(() => {
 
 const grandTotal = computed(() => filteredSales.value.reduce((sum, s) => sum + s.total, 0))
 const grandQty = computed(() => filteredSales.value.reduce((sum, s) => sum + s.totalQty, 0))
+const saleCost = (sale: SaleHistoryEntry) =>
+  sale.lines.reduce((sum, line) => {
+    const byId =
+      line.productId == null ? undefined : productCostById.value.get(String(line.productId))
+    const bySku = productCostBySku.value.get(String(line.sku || "").trim().toLowerCase())
+    const unitCost = Number((byId ?? bySku) || 0)
+    return sum + unitCost * Number(line.qty || 0)
+  }, 0)
+const grandCost = computed(() => filteredSales.value.reduce((sum, s) => sum + saleCost(s), 0))
+const grandProfit = computed(() => grandTotal.value - grandCost.value)
 
 const toInputDate = (date: Date) => {
   const year = date.getFullYear()
@@ -432,10 +458,23 @@ const loadHistory = async () => {
   loading.value = true
   error.value = ""
   try {
-    const rows = await supa.listSalesHistory()
+    const [rows, products] = await Promise.all([supa.listSalesHistory(), supa.listProducts()])
     sales.value = Array.isArray(rows) ? rows : []
+
+    const mapById = new Map<string, number>()
+    const mapBySku = new Map<string, number>()
+    for (const p of Array.isArray(products) ? (products as ProductCostRow[]) : []) {
+      const unitCost = Number(p.purchase_price || 0)
+      if (p.id != null) mapById.set(String(p.id), unitCost)
+      const sku = String(p.sku || "").trim().toLowerCase()
+      if (sku) mapBySku.set(sku, unitCost)
+    }
+    productCostById.value = mapById
+    productCostBySku.value = mapBySku
   } catch (err: any) {
     sales.value = []
+    productCostById.value = new Map()
+    productCostBySku.value = new Map()
     error.value =
       err?.data?.statusMessage ||
       err?.data?.message ||
