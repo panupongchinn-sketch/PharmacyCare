@@ -151,7 +151,7 @@
     </section>
 
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div class="overflow-auto">
+      <div class="max-h-[620px] overflow-auto">
         <table class="w-full min-w-[920px] text-sm">
           <thead class="bg-slate-50 text-slate-600">
             <tr>
